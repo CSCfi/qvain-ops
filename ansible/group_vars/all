@@ -1,0 +1,11 @@
+project_name: qvain-app
+app_user: qvain-user
+project_repo: https://github.com/CSCfi/metax-api
+
+qvain_base_path: /srv/qvain
+
+qvain_db_base_path: "{{ qvain_base_path }}/db"
+qvain_db_data_path: "{{ qvain_db_base_path }}/data"
+qvain_db_backup_path: "{{ qvain_db_base_path }}/backup"
+qvain_db_backup_archive_path: "{{ qvain_db_backup_path }}/archive"
+qvain_db_config_path: "{{ qvain_db_base_path }}/config"

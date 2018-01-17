@@ -1,0 +1,31 @@
+# THIS WHOLE ROLE NEEDS TO BE REVISED SINCE AT LEAST THE CERTIFICATES CANNOT ANY MORE BE PLACED TO THE DIR THAT IS USED IN METAX, I.E. NGINX DIR
+
+- name: Create self-signed SSL cert and private key
+  command: openssl req -x509 -nodes -subj "/C=FI/ST=Uusimaa/L=Espoo/O=CSC/CN={{ server_domain_name }}" -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl_certs/{{ server_certificate_name }}.key -out /etc/nginx/ssl_certs/nginx-selfsigned.crt creates=/etc/nginx/ssl_certs/{{ server_certificate_name }}.crt
+  when: deployment_environment_id == 'local_development' or deployment_environment_id == 'playground'
+
+# HERE WE SHOULD IMPLEMENT INSTALLING SERVER SSL CERTIFICATE FOR OTHER THAN LOCAL DEV ENVS
+
+# THIS IS THE METAX STUFF
+- block:
+
+    - name: Install dos2unix
+      yum: name=dos2unix state=latest
+
+    - name: Copy CA-signed primary certificate and private key
+      copy: src=files/certificates/{{ item }} dest=/etc/nginx/ssl_certs/{{ item }} owner=root group=root mode=0644
+      with_items:
+        - "{{ server_certificate_name }}.crt"
+        - "{{ server_certificate_name }}.key"
+
+    - name: Concatenate intermediate certificate to primary certificate
+      lineinfile:
+        line: "{{ lookup('file', 'files/certificates/{{ intermediate_certificate_name }}') }}"
+        dest: "/etc/nginx/ssl_certs/{{ server_certificate_name }}.crt"
+        state: present
+
+    - name: Fix concatenated file carriage returns
+      command: dos2unix /etc/nginx/ssl_certs/{{ server_certificate_name }}.crt
+
+  # Add envs to the when below as new certificates will become available for the target env
+  when: deployment_environment_id == 'test' or deployment_environment_id == 'stable'

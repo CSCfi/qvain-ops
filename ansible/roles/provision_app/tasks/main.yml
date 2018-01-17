@@ -1,0 +1,24 @@
+- include_role: name=app_config
+
+- name: Create folder {{ qvain_app_base_path }}
+  file: path={{ qvain_app_base_path }} state=directory owner={{ app_user }} group=qvain mode=0755
+
+- name: Create qvain app logging directory
+  file: path=/var/log/{{ project_name }} state=directory owner={{ app_user }} group=qvain
+
+- name: Create qvain app log file and ensure file permissions
+  copy: content="" dest=/var/log/{{ project_name }}/qvain_app.log force=no owner={{ app_user }} group=qvain mode=0755
+
+- name: Clone project remote repo from branch {{ project_repo_branch }} to {{ qvain_app_base_path }}
+  git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
+  become_user: "{{ app_user }}"
+
+# What's next?
+
+- debug:
+    msg: "Local dev environment successfully set up. Run commands 'sudo su - {{ app_user }}' and 'runserver' to run the app."
+  when: deployment_environment_id == 'local_development'
+
+- debug:
+    msg: "{{ deployment_environment_id }} environment successfully set up."
+  when: deployment_environment_id != 'local_development'

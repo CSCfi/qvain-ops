@@ -1,0 +1,26 @@
+# Ignore swap and zip files
+*.swp
+*.zip
+
+# Ignore vagrant cache directory
+.vagrant/
+
+# ignore qvain-app because it is another git-repo
+qvain-app/
+
+# ansible retry-file
+ansible/site.retry
+
+# Ansible script related
+ansible/inventories/test/group_vars/test
+ansible/inventories/test/host_vars
+ansible/files/
+
+# Other
+*.pem
+*.tar.gz
+__pycache__
+.idea
+
+# Mac stuff
+.DS_Store

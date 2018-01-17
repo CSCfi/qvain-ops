@@ -1,0 +1,61 @@
+---
+
+- name: Check if Redis is installed as service
+  stat: path=/usr/lib/systemd/system/redis.service
+  register: service_status
+  ignore_errors: yes
+
+- block:
+    - name: Place net.core.somaxconn config to /etc/rc.local
+      lineinfile:
+        path: /etc/rc.local
+        insertbefore: '^exit 0'
+        line: 'sysctl -w net.core.somaxconn=65535'
+        state: present
+
+    - name: Set net.core.somaxconn config
+      command: sysctl -w net.core.somaxconn=65535
+
+    - name: Place Disable Transparent Huge Pages config to /etc/rc.local
+      lineinfile:
+        path: /etc/rc.local
+        insertbefore: '^exit 0'
+        line: 'echo never > /sys/kernel/mm/transparent_hugepage/enabled'
+        state: present
+
+    - name: Set Disable Transparent Huge Pages
+      command: echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      become_user: root
+
+    - name: Place vm.overcommit_memory = 1 config to /etc/sysctl.conf
+      lineinfile:
+        path: /etc/sysctl.conf
+        line: 'vm.overcommit_memory = 1'
+        state: present
+
+    - name: Set vm.overcommit_memory = 1
+      command: sysctl vm.overcommit_memory=1
+
+    - name: Install Redis server
+      yum: name=redis state=latest
+
+    - name: Copy Redis configuration to its place
+      copy: src=redis.conf dest=/etc/redis.conf owner=redis group=root mode=644
+
+    - name: Add {{ app_user }} user to redis group
+      user: name={{ app_user }} shell=/bin/bash groups=redis append=yes
+
+    - name: Modify systemd redis.service to get rid of errors on startup
+      lineinfile:
+        path: /usr/lib/systemd/system/redis.service
+        insertafter: '^Group=redis'
+        line: LimitNOFILE=64000
+        state: present
+
+    - name: Reload systemctl daemon
+      command: systemctl daemon-reload
+
+  when: not service_status.stat.exists
+
+- name: Start Redis service
+  service: name=redis state=restarted enabled=yes

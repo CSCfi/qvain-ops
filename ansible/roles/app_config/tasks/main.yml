@@ -1,0 +1,4 @@
+# MODIFY THE app_config TEMPLATE TO YOUR NEEDS (WHATEVER FORMAT) AND THEN ENABLE ITS COPYING TO TARGET ENV 
+
+# - name: Copy app config to target VM
+#   template: src=templates/app_config dest=/home/{{ app_user }}/app_config owner={{ app_user }} group=qvain mode=0440

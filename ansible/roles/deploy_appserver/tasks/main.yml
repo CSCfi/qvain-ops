@@ -1,0 +1,59 @@
+---
+
+- include_role: name=update_packages
+
+# Database stuff related to deployment
+
+- name: Get current timestamp
+  shell: date +%Y%m%d%H%M%S
+  register: timestamp
+
+- name: Backup database
+  shell: "pg_dump --format=custom $QVAIN_DATABASE_NAME -f {{ qvain_db_backup_archive_path }}/qvain_db_{{ deployment_environment_id }}_backup_{{ timestamp.stdout }}.dump"
+  args:
+    executable: /bin/bash
+  become_user: postgres
+
+# App stuff related to deployment
+
+- block:
+
+    - name: Pull latest data from project remote repo branch {{ project_repo_branch }}
+      git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
+      become_user: "{{ app_user }}"
+      register: pull_cmd
+      ignore_errors: yes
+
+    - block:
+
+        - name: Stash repo changes since most likely git pull failed because of modifications in the local repo
+          command: git stash
+          args:
+            chdir: "{{ qvain_app_base_path }}"
+
+        - name: Re-pull latest data from project remote repo branch {{ project_repo_branch }}
+          git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
+          become_user: "{{ app_user }}"
+
+        - name: Unstash git repo
+          shell: git stash apply
+          args:
+            executable: /bin/bash
+            chdir: "{{ qvain_app_base_path }}"
+          become_user: "{{ app_user }}"
+
+      when: pull_cmd.failed
+
+  when: deployment_environment_id == 'local_development'
+
+- block:
+
+    - name: Pull latest data from project repo branch {{ project_repo_branch }}
+      git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
+      become_user: "{{ app_user }}"
+
+  when: deployment_environment_id == 'test'
+
+- include_role: name=app_config
+
+  

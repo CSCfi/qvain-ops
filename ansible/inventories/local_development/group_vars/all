@@ -1,0 +1,46 @@
+shared_folder_base_path: /qvain
+qvain_app_base_path: "{{ shared_folder_base_path }}/{{ project_name }}"
+
+deployment_environment_id: local_development
+server_certificate_name: selfsigned
+project_repo_branch: test
+server_domain_name: qvain.csc.local
+
+qvain_database:
+  name: qvain_db
+  user: qvain_db_user
+  password: Rs9VJTsWjs2BqnF8
+
+redis:
+  instance_common:
+    master_host: '127.0.0.1'
+    master_port: 6379
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+    password: password
+
+  instance_1:
+    number: 1
+    port: 6379
+    listen_hosts: '127.0.0.1'
+
+  instance_2:
+    number: 2
+    port: 6380
+    listen_hosts: '127.0.0.1'
+
+  sentinel_common:
+    service_name: 'metax-master'
+    quorum: 2 # how many sentinels need to agree before switching master
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+
+  sentinel_1:
+    number: 1
+    port: 5000
+
+  sentinel_2:
+    number: 2
+    port: 5001
+
+  sentinel_3:
+    number: 3
+    port: 5002

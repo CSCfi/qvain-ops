@@ -1,0 +1,2 @@
+[appservers]
+qvain-test ansible_host="{{ external_ip }}" ansible_connection=ssh ansible_user=cloud-user

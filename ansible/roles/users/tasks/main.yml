@@ -1,0 +1,17 @@
+- name: Add app user to OS
+  user: name={{ app_user }} groups=wheel,qvain append=yes state=present createhome=yes
+
+- block:
+    - name: Add users that should be able to log in to OS
+      user: name={{ item }} groups=wheel,qvain append=yes state=present createhome=yes
+      with_items: "{{ os_users }}"
+
+    - name: Create .ssh folders to login users' home folders in cloud environment
+      file: path=/home/{{ item }}/.ssh owner={{ item }} mode=0700 state=directory
+      with_items: "{{ os_users }}"
+
+    - name: Add login users' public keys to cloud environment
+      copy: src=files/public_keys/{{ item }}.pub dest=/home/{{ item }}/.ssh/authorized_keys owner={{ item }} mode=0700
+      with_items: "{{ os_users }}"
+
+  when: deployment_environment_id != 'local_development'
