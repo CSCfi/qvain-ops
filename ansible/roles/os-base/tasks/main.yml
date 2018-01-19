@@ -49,11 +49,23 @@
 #     name: fi_FI.UTF-8
 #     state: present
 
-- name: Set default locale as LC_ALL to fi_FI.UTF-8
-  lineinfile:
-    dest: /etc/environment
-    state: present
-    line: "LC_ALL=\"fi_FI.UTF-8\""
+# -wvh- fi_FI is missing from my CentOS image, as is locale_gen; use localedef on CentOS 7.
+#       Locales get cached in:
+#         /usr/lib/locale/locale-archive
+#       Consider reinstalling yum if too many files are missing from the OS image:
+#         yum reinstall glibc-common
+- name: Make sure fi_FI locale exists
+  command: localedef -c -i fi_FI -f UTF-8 fi_FI.UTF-8
+
+- name: Make sure en_GB locale exists
+  command: localedef -c -i en_GB -f UTF-8 en_GB.UTF-8
+
+# -wvh- don't, just use LC_CTYPE
+#- name: Set default locale as LC_ALL to fi_FI.UTF-8
+#  lineinfile:
+#    dest: /etc/environment
+#    state: present
+#    line: "LC_ALL=\"fi_FI.UTF-8\""
 
 - name: Set default locale as LC_CTYPE to fi_FI.UTF-8
   lineinfile:
