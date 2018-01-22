@@ -1,0 +1,25 @@
+---
+
+- name: Install go
+  yum: name=golang state=latest
+  
+- name: Get go version
+  command: go version
+  register: go_version
+
+- name: Check minimum go version
+  command: go version
+  register: go_version
+  failed_when: go_version.stdout | regex_replace('^.* go([0-9][^ ]+) .*$', '\1') | version_compare(go_version_at_least, "<")
+
+- name: Set GOPATH variable
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    line: "GOPATH={{go_default_gopath}}"
+    
+- name: Set GOBIN variable
+  lineinfile:
+    dest: "/etc/environment"
+    state: present
+    line: "GOBIN={{go_default_gobin}}"

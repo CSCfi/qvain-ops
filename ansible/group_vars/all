@@ -9,3 +9,7 @@ qvain_db_data_path: "{{ qvain_db_base_path }}/data"
 qvain_db_backup_path: "{{ qvain_db_base_path }}/backup"
 qvain_db_backup_archive_path: "{{ qvain_db_backup_path }}/archive"
 qvain_db_config_path: "{{ qvain_db_base_path }}/config"
+
+go_version_at_least: "1.8"
+go_default_gopath: "~/go"
+go_default_gobin: "~/bin"
