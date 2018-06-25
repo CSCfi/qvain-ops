@@ -1,5 +1,5 @@
 [appservers]
-qvain-production ansible_host="{{ server.ip }}" ansible_connection=ssh ansible_user="{{ ssh_user }}"
+qvain-production ansible_host=qvain-prod.csc.fi ansible_connection=ssh ansible_user="{{ ssh_user }}"
 
 [test:children]
 appservers
