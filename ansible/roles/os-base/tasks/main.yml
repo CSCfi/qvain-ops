@@ -128,6 +128,10 @@
     command: systemd-tmpfiles --create --prefix /var/log/journal
   - name: Reload systemd-journald
     command: killall -USR1 systemd-journald
+    when: deployment_environment_id != 'production'
+  - name: Reload systemd-journald (production)
+    command: killall5 -USR1 systemd-journald
+    when: deployment_environment_id == 'production'
   when: not journal_log.stat.exists
 
 - include_role: name=users
