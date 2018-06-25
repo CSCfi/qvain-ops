@@ -10,6 +10,7 @@
 
 - name: Install Postgresql yum repository package
   yum: name=https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm state=present
+  when: deployment_environment_id != 'production'
 
 - name: Install PostgreSQL 9 and python psycopg2
   yum: name={{ item }} state=present
@@ -22,102 +23,115 @@
 - name: Create database data directory
   file: path={{ item }} state=directory owner=postgres group=postgres mode=700
   with_items:
-    - "{{ qvain_db_data_path }}"
+    - "{{ pg_data_path }}"
 
 - name: Initialize Postgres database cluster
-  command: /usr/pgsql-9.6/bin/pg_ctl initdb -D {{ qvain_db_data_path }} creates={{ qvain_db_data_path }}/postgresql.conf
+  command: /usr/pgsql-9.6/bin/pg_ctl initdb -D {{ pg_data_path }} creates={{ pg_data_path }}/postgresql.conf
   become_user: postgres
 
 - name: Shutdown Postgresql
   systemd: name=postgresql-9.6 enabled=yes state=stopped
 
-- name: Create custom Postgres service file that refers to the original one and set correct PGDATA location
+#- name: Create custom Postgres service file that refers to the original one and set correct PGDATA location
+#  copy:
+#    dest: /etc/systemd/system/postgresql-9.6.service
+#    content: |
+#      .include /lib/systemd/system/postgresql-9.6.service
+#      [Service]
+#      Environment=PGDATA={{ pg_data_path }}
+
+- name: Create systemd override directory for postgresql
+  file:
+    path: /etc/systemd/system/postgresql-9.6.service.d
+    state: directory
+
+- name: Add systemd override for postgresql PGDATA path
   copy:
-    dest: /etc/systemd/system/postgresql-9.6.service
     content: |
-      .include /lib/systemd/system/postgresql-9.6.service
       [Service]
-      Environment=PGDATA={{ qvain_db_data_path }}
+      Environment=PGDATA={{ pg_data_path }}
+    dest: /etc/systemd/system/postgresql-9.6.service.d/pgdata.conf
 
 - name: Systemctl daemon-reload
   shell: "systemctl daemon-reload"
 
 - name: Copy Postgres host based authentication configuration
-  template: src=templates/pg_hba.conf dest={{ qvain_db_data_path }}/pg_hba.conf owner=postgres group=postgres
+  template: src=templates/pg_hba.conf dest={{ pg_data_path }}/pg_hba.conf owner=postgres group=postgres
 
-- name: Change Postgres configuration listen_address to all
-  lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
-    state: present
-    regexp: "listen_addresses ="
-    line: "listen_addresses = '*'"
+# -wvh- only unix sockets, but leave tcp on localhost
+#- name: Change Postgres configuration listen_address to all
+#  lineinfile:
+#    dest: "{{ pg_data_path }}/postgresql.conf"
+#    state: present
+#    regexp: "listen_addresses ="
+#    line: "listen_addresses = '*'"
 
 - name: Change Postgres configuration log_timezone to Finnish locale
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "log_timezone ="
     line: "log_timezone = 'Europe/Helsinki'"
 
 - name: Change Postgres configuration timezone to Finnish locale
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "timezone ="
     line: "timezone = 'Europe/Helsinki'"
 
 - name: Change Postgres configuration client_encoding UTF8
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "client_encoding ="
     line: "client_encoding = 'UTF8'"
 
 - name: Change Postgres configuration lc_messages to Finnish locale UTF8
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_messages ="
     line: "lc_messages = 'en_US.utf8'"
 
 - name: Change Postgres configuration lc_monetary to Finnish locale UTF8
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_monetary ="
     line: "lc_monetary = 'fi_FI.utf8'"
 
 - name: Change Postgres configuration lc_numeric to Finnish locale UTF8
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_numeric ="
     line: "lc_numeric = 'fi_FI.utf8'"
 
 - name: Change Postgres configuration lc_time to Finnish locale UTF8
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_time ="
     line: "lc_time = 'fi_FI.utf8'"
 
 - name: Change Postgres configuration default_text_search_config to Finnish
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "default_text_search_config ="
     line: "default_text_search_config = 'pg_catalog.finnish'"
 
 - name: Optimize Postgres configuration shared_buffers
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "shared_buffers ="
     line: "shared_buffers = '{{ (ansible_memtotal_mb*0.25) | int }}MB'"
 
 - name: Optimize Postgres configuration effective_cache_size
   lineinfile:
-    dest: "{{ qvain_db_data_path }}/postgresql.conf"
+    dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "effective_cache_size ="
     line: "effective_cache_size = '{{ (ansible_memtotal_mb*0.75) | int }}MB'"
@@ -126,13 +140,13 @@
   systemd: name=postgresql-9.6 state=restarted daemon_reload=yes
 
 - block:
-    - name: Ensure Qvain database user exists
-      postgresql_user: name={{ qvain_database.user }} password={{ qvain_database.password }} state=present role_attr_flags=CREATEDB
+    - name: Ensure app database user exists
+      postgresql_user: name={{ database.user }} password={{ database.hashed }} encrypted=true state=present
 
-    - name: Ensure Qvain database is present
-      postgresql_db: template=template0 db={{ qvain_database.name }} state=present owner={{ qvain_database.user }} encoding=UTF-8 lc_collate=fi_FI.UTF-8 lc_ctype=fi_FI.UTF-8
+    - name: Ensure app database is present
+      postgresql_db: template=template0 db={{ database.name }} state=present owner={{ database.user }} encoding=UTF-8 lc_collate=fi_FI.UTF-8 lc_ctype=fi_FI.UTF-8
 
     - name: Remove unnecessary privileges from others
-      postgresql_privs: db={{ qvain_database.name }} role=PUBLIC type=database priv=ALL state=absent
+      postgresql_privs: db={{ database.name }} role=PUBLIC type=database priv=ALL state=absent
 
   become_user: postgres

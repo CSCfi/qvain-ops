@@ -1,0 +1,30 @@
+### build the Go application
+
+# This builds without Make (no versioning info);
+# binaries end up in <source_dir>/bin and are not copied.
+#- name: Build app
+#  command: go build -v {{ app.import_path }}/cmd/...
+#  environment:
+#    GOPATH: "{{ app.base }}/go"
+#    GOBIN: "{{ app.base }}/bin"
+#  become_user: "{{ app.user }}"
+#  register: build_cmd
+
+# This builds using the makefile (which adds versioning info);
+# INSTALL env var tells where the binaries get copied to if the build was successful.
+#
+# WARNING: $PWD is not set correctly for the user; don't rely on it
+- name: Build app
+  command: make install
+  args:
+    chdir: "{{ app.base }}/go/src/{{ app.import_path }}"
+  environment:
+    GOPATH: "{{ app.base }}/go"
+    GOBIN: "{{ app.base }}/go/bin"
+    INSTALL: "{{ app.base }}/bin"
+  become_user: "{{ app.user }}"
+  register: build_cmd
+
+- name: Reload backend process
+  systemd: name={{ app.name }}.service state=restarted
+  when: build_cmd is succeeded

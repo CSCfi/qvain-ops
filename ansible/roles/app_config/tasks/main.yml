@@ -1,4 +1,34 @@
-# MODIFY THE app_config TEMPLATE TO YOUR NEEDS (WHATEVER FORMAT) AND THEN ENABLE ITS COPYING TO TARGET ENV 
 
-# - name: Copy app config to target VM
-#   template: src=templates/app_config dest=/home/{{ app_user }}/app_config owner={{ app_user }} group=qvain mode=0440
+- name: Make sure app base folders exist
+  block:
+    - file: path={{ app.base }} state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+    - file: path={{ app.base }}/bin state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+    - file: path={{ app.base }}/sbin state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+    - file: path={{ app.base }}/var state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+    - file: path={{ app.base }}/etc state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+
+- name: Copy app config
+  template: src=templates/env dest={{ app.base }}/etc/environment owner={{ app.user }} group={{ app.user }} mode=440
+
+- user:
+    name: "{{ app.user }}"
+  register: app_user_info
+
+- name: Modify app user profile to set GOPATH, GOBIN and configuration variables
+  blockinfile:
+    path: "{{ app_user_info.home }}/.bashrc"
+    block: |
+      # set GOPATH and GOBIN for application
+      GOPATH="{{ app.base }}/go"
+      GOBIN="{{ app.base }}/bin"
+      export GOPATH GOBIN
+
+      # export configuration env vars for user
+      if [ -e .env ]; then
+        set -a
+        source .env
+        set +a
+      fi
+
+- name: Create symlink to app config in home directory
+  file: src={{ app.base }}/etc/environment dest={{ app_user_info.home }}/.env owner={{ app.user }} group={{ app.user }} mode=440 state=link

@@ -1,0 +1,18 @@
+---
+
+- hosts: loginservers
+  become: yes
+  roles:
+    - os-base
+    - role: shibboleth-sp
+      configurables: ['certs']
+      shibbolethsp_debug: true
+    - apache
+    - auth-proxy
+    #- postgres
+    #- backup
+    #- redis
+    #- nginx
+    #- certificates
+    #- go
+    #- provision_app

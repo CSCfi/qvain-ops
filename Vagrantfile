@@ -25,7 +25,7 @@ end
 Vagrant.configure("2") do |config|
   config.vm.define "qvain_local_dev_env" do |server|
     server.vm.box = "centos/7"
-    server.vm.network :private_network, ip: "40.40.40.40"
+    server.vm.network :private_network, ip: "10.0.0.100"
 
     case RUBY_PLATFORM
     when /mswin|msys|mingw|cygwin|bccwin|wince|emc/
@@ -33,7 +33,8 @@ Vagrant.configure("2") do |config|
         server.vm.synced_folder "./", "/qvain", :mount_options => ["dmode=777,fmode=777"]
     else
         # Basic VM synced folder mount
-        server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=777,fmode=777"]
+        #server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=755,fmode=644"]
+		server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=777,fmode=777"]
     end
 
     server.vm.provision "shell", inline: $script

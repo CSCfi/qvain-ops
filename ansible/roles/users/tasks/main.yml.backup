@@ -1,0 +1,21 @@
+# removed wheel from app user
+- name: Add app user to OS
+  user: name={{ app.user }} group={{ app.user }} groups={{ app.user }} append=yes state=present createhome=yes
+
+- block:
+    - name: Add users that should be able to log in to OS
+      user: user={{ item.key }} groups=wheel,{{ app.user }} comment={{ item.value.name }} append=yes state=present createhome=yes
+      with_dict: "{{ os_users }}"
+
+#    - name: Make sure users' home directory is only readable by themselves
+#      with_dict: "{{ os_users }}"
+
+    - name: Create .ssh folders to login users' home folders in cloud environment
+      file: path=/home/{{ item.key }}/.ssh owner={{ item.key }} mode=0700 state=directory
+      with_dict: "{{ os_users }}"
+
+    - name: Add login users' public keys to cloud environment
+      copy: content="{{ item.value.key }}.pub dest=/home/{{ item.key }}/.ssh/authorized_keys owner={{ item.key }} mode=0700
+      with_dict: "{{ os_users }}"
+
+  when: deployment_environment_id != 'local_development'

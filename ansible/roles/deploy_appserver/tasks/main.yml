@@ -2,58 +2,60 @@
 
 - include_role: name=update_packages
 
-# Database stuff related to deployment
+- name: Backup database before updating app
+  block:
 
-- name: Get current timestamp
-  shell: date +%Y%m%d%H%M%S
-  register: timestamp
+  - name: Get current timestamp
+    shell: date +%Y%m%d%H%M%S
+    register: timestamp
 
-- name: Backup database
-  shell: "pg_dump --format=custom $QVAIN_DATABASE_NAME -f {{ qvain_db_backup_archive_path }}/qvain_db_{{ deployment_environment_id }}_backup_{{ timestamp.stdout }}.dump"
-  args:
-    executable: /bin/bash
-  become_user: postgres
+  - name: Backup database
+    shell: "pg_dump --format=custom {{ database.name }} -f {{ pg_backup_archive_path }}/{{ app.name }}_db_{{ deployment_environment_id }}_backup_{{ timestamp.stdout }}.dump"
+    args:
+      executable: /bin/bash
+    become_user: postgres
 
-# App stuff related to deployment
+- name: Pull app source (development)
+  block:
 
-- block:
+  - name: Pull latest data from project repo
+    git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-api-deploy-key.pem
+    become_user: "{{ app.user }}"
+    #register: pull_cmd
+    #ignore_errors: yes
 
-    - name: Pull latest data from project remote repo branch {{ project_repo_branch }}
-      git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
-      become_user: "{{ app_user }}"
-      register: pull_cmd
-      ignore_errors: yes
+  - block:
 
-    - block:
+    - name: Stash repo changes since most likely git pull failed because of modifications in the local repo
+      command: git stash
+      args:
+        chdir: "{{ app.base }}/go/src/{{ app.import_path }}"
 
-        - name: Stash repo changes since most likely git pull failed because of modifications in the local repo
-          command: git stash
-          args:
-            chdir: "{{ qvain_app_base_path }}"
+    - name: Re-pull latest data from project repo
+      git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-api-deploy-key.pem
+      become_user: "{{ app.user }}"
 
-        - name: Re-pull latest data from project remote repo branch {{ project_repo_branch }}
-          git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
-          become_user: "{{ app_user }}"
+    - name: Unstash git repo
+      shell: git stash apply
+      args:
+        executable: /bin/bash
+        chdir: "{{ app.base }}/go/src/{{ app.import_path }}"
+      become_user: "{{ app.user }}"
 
-        - name: Unstash git repo
-          shell: git stash apply
-          args:
-            executable: /bin/bash
-            chdir: "{{ qvain_app_base_path }}"
-          become_user: "{{ app_user }}"
-
-      when: pull_cmd.failed
+    when: pull_cmd.failed
 
   when: deployment_environment_id == 'local_development'
 
-- block:
-
-    - name: Pull latest data from project repo branch {{ project_repo_branch }}
-      git: repo={{ project_repo }} dest={{ qvain_app_base_path }} version={{ project_repo_branch }}
-      become_user: "{{ app_user }}"
-
-  when: deployment_environment_id == 'test'
+- name: Pull app source (not development)
+  block:
+  - name: Pull latest data from project repo
+    git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-api-deploy-key.pem
+    become_user: "{{ app.user }}"
+  - name: Pull latest data from project web repo branch
+    git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-js-deploy-key.pem
+    become_user: "{{ app.user }}"
+    when: app.webrepo is defined
+  when: deployment_environment_id != 'local_development'
 
 - include_role: name=app_config
-
-  
+- include_role: name=build_app

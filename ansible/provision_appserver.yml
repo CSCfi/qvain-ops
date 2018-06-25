@@ -1,25 +1,21 @@
 ---
 
 - hosts: appservers
-  vars:
-    is_provision: true
   become: yes
-  pre_tasks:
-    - name: Place database name into target VM env vars
-      lineinfile:
-        dest: /etc/environment
-        state: present
-        line: 'QVAIN_DATABASE_NAME="{{ qvain_database.name }}"'
-    - name: Place database user into target VM env vars
-      lineinfile:
-        dest: /etc/environment
-        state: present
-        line: 'QVAIN_DATABASE_USER="{{ qvain_database.user }}"'
   roles:
     - os-base
     - postgres
     - backup
     - redis
-    #- certificates IF YOU WANT CERTIFICATES WORKING THE ROLE NEEDS TO BE REVISED
-    - go # NOT IMPLEMENTED, BUT EMPTY main.yml exists in go/tasks
-    - provision_app
+    - certificates
+    - nginx
+    - role: letsencrypt
+      when: deployment_environment_id in ['test', 'stable']
+    - go
+    - role: provision_app
+      when: deployment_environment_id != 'production'
+    - role: app_config
+      when: deployment_environment_id == 'production'
+  handlers:
+    - name: restart sshd
+      service: name=sshd state=restarted

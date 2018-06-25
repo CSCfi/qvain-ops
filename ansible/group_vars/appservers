@@ -1,0 +1,28 @@
+### Configures a Go application with Postgresql and optional front-end repo.
+### Branch and API endpoints are configured for each respective environment in inventories/*.
+app:
+  name: qvain
+  user: qvain
+  base: "{{ app_base_path }}"
+  source: "{{ app_base_path }}/source"
+  webpath: "{{ app_base_path }}/web"
+  sqlschema: schema/schema.sql
+  repo: git@github.com:NatLibFi/qvain-api.git
+  import_path: github.com/NatLibFi/qvain-api
+  webrepo: git@github.com:NatLibFi/qvain-js.git
+  branch: "{{ repo_branch }}"
+
+# How to calculate the Go import_path if not set manually:
+#   convert (potential) scp-style URIs to ssh://, parse the URL, extract the hostname and path, and drop the (potential) .git extension
+#go_import_path: "{{ ['hostname', 'path']|map('extract', app.repo|regex_replace('^([a-z0-9_-]+@)([^/:]+)[:/]*', 'ssh://\\1\\2/')|urlsplit)|join|splitext|first }}"
+
+# database
+database:
+  host:
+  name: qvaindb
+  user: qvain
+  password: "{{ secrets.db.password }}"
+  hashed: "{{ secrets.db.hashed }}"
+
+# default: no extra users
+os_users: {}

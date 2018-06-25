@@ -1,15 +1,11 @@
-project_name: qvain-app
-app_user: qvain-user
-project_repo: https://github.com/CSCfi/metax-api
+app_base_path: /srv/qvain
 
-qvain_base_path: /srv/qvain
-
-qvain_db_base_path: "{{ qvain_base_path }}/db"
-qvain_db_data_path: "{{ qvain_db_base_path }}/data"
-qvain_db_backup_path: "{{ qvain_db_base_path }}/backup"
-qvain_db_backup_archive_path: "{{ qvain_db_backup_path }}/archive"
-qvain_db_config_path: "{{ qvain_db_base_path }}/config"
+pg_base_path: "{{ app.base }}/db"
+pg_data_path: "{{ pg_base_path }}/data"
+pg_backup_path: "{{ pg_base_path }}/backup"
+pg_backup_archive_path: "{{ pg_backup_path }}/archive"
+pg_config_path: "{{ pg_base_path }}/config"
 
 go_version_at_least: "1.8"
-go_default_gopath: "~/go"
-go_default_gobin: "~/bin"
+go_default_gopath: "$HOME/go"
+go_default_gobin: "$HOME/bin"

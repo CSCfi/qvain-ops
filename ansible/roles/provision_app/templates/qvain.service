@@ -1,0 +1,31 @@
+[Unit]
+Description=Qvain backend service
+#ConditionPathExists={{ app.base }}/bin/qvain-backend
+After=postgresql.service
+Wants=postgresql.service
+#Requires=postgresql.service
+
+[Service]
+WorkingDirectory={{ app.base }}
+ExecStart={{ app.base }}/bin/qvain-backend
+Environment=_UNIT=%n
+EnvironmentFile={{ homedir }}/.env
+User={{ app.user }}
+LimitNOFILE=32768
+UMask=0077
+PrivateTmp=yes
+ProtectSystem=full
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+SecureBits=keep-caps
+StandardOutput=journal
+# Restart=on-failure
+# RestartSec=3s
+
+# systemd might not log last lines before a process ends due to a race condition,
+# so make sure the SyslogIdentifier field is set (default: process name of the executed process)
+# see: https://github.com/systemd/systemd/issues/2913
+#      https://bugs.freedesktop.org/show_bug.cgi?id=50184
+SyslogIdentifier=qvain
+
+[Install]
+WantedBy=multi-user.target

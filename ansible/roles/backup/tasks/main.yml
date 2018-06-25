@@ -3,29 +3,29 @@
 - name: Create database backup directories
   file: path={{ item }} state=directory owner=postgres group=postgres mode=0770
   with_items:
-    - "{{ qvain_db_backup_path }}"
-    - "{{ qvain_db_backup_archive_path }}"
+    - "{{ pg_backup_path }}"
+    - "{{ pg_backup_archive_path }}"
 
 - name: Copy backup script in place
-  template: src=templates/qvain_backup.sh dest={{ qvain_db_backup_path }} owner=postgres group=postgres mode=0770
+  template: src=templates/backup.sh dest={{ pg_backup_path }} owner=postgres group=postgres mode=0770
 
 - name: Create cronjob for running backup script
   cron:
     name: "Backup data"
     minute: "30"
     hour: "2"
-    job: "{{ qvain_db_backup_path }}/qvain_backup.sh > /dev/null 2>&1"
+    job: "{{ pg_backup_path }}/backup.sh > /dev/null 2>&1"
     state: present
     user: postgres
 
 - name: Copy backup cleaning script in place
-  template: src=templates/qvain_backup_clean.sh dest={{ qvain_db_backup_path }} owner=root group=postgres mode=0770
+  template: src=templates/backup_clean.sh dest={{ pg_backup_path }} owner=root group=postgres mode=0770
 
 - name: Create cronjob for running backup cleaning script
   cron:
     name: "Clean backup data"
     minute: "30"
     hour: "3"
-    job: "{{ qvain_db_backup_path }}/qvain_backup_clean.sh > /dev/null 2>&1"
+    job: "{{ pg_backup_path }}/backup_clean.sh > /dev/null 2>&1"
     state: present
     user: root

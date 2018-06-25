@@ -1,0 +1,26 @@
+---
+
+- name: Install nginx web server
+  yum: name=nginx state=latest
+
+- name: Copy nginx configuration file
+#  template: src=templates/{{app.name}}-nginx.conf dest=/etc/nginx/default.d/{{app.name}}.conf
+  template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+  register: nginx_config
+
+#- name: Copy nginx configuration file for letsencrypt
+#  template: src=templates/letsencrypt.conf dest=/etc/nginx/default.d/letsencrypt.conf
+
+- name: Make sure static web directory exists
+  file: path={{app.base}}/static state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
+
+# this should have happened in the certificates task, but check nevertheless
+- name: Make sure web cert directory exists (nginx)
+  file: path=/etc/pki/web state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
+
+- name: Generate Diffie-Hellman parameter for DHE ciphersuites
+  command: openssl dhparam -out /etc/pki/web/dhparam.pem 2048 creates=/etc/pki/web/dhparam.pem
+
+- name: (Re)start nginx service
+  service: name=nginx state=restarted enabled=yes
+  when: nginx_config.changed

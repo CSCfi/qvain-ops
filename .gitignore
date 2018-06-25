@@ -11,6 +11,9 @@ qvain-app/
 # ansible retry-file
 ansible/site.retry
 
+# ansible fact cache
+ansible/.cache/
+
 # Ansible script related
 ansible/inventories/test/group_vars/test
 ansible/inventories/test/host_vars

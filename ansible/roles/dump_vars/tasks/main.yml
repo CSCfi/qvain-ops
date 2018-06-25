@@ -1,0 +1,4 @@
+# -wvh- taken from: https://coderwall.com/p/13lh6w/dump-all-variables
+
+- name: Dump all vars
+  action: template src=templates/dumpall.j2 dest=$HOME/ansible.all

@@ -1,0 +1,56 @@
+# the problem with using the ansible module for letsencrypt instead of the certbot command is that you can't easily use certbot to renew the certificate(s)
+#- name: create letsencrypt certificate task
+#  import_tasks: letsencrypt.yml
+#  #when: ansible_os_platform|lower == 'redhat'
+
+- name: Make sure letsencrypt web directory exists
+  file: path={{app.base}}/letsencrypt state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
+
+- name: Copy nginx configuration file for letsencrypt
+  template: src=templates/letsencrypt.conf dest=/etc/nginx/default.d/letsencrypt.conf
+  register: letsencrypt_config
+
+- name: (Re)start nginx service
+  service: name=nginx state=restarted enabled=yes
+  when: letsencrypt_config.changed
+
+- name: Install letsencrypt certbot
+  yum: name=certbot,certbot-nginx state=present
+
+- name: Run letsencrypt certbot
+  command: certbot -n certonly --agree-tos --email {{ app.user }}@{{ server.fqdn }} --webroot -w {{ app.base }}/letsencrypt -d {{ server.fqdn }}
+  args:
+    creates: "/etc/letsencrypt/live/{{ server.fqdn }}"
+
+- name: Enable letsencrypt certbot update timer
+  systemd:
+    name: certbot-renew.timer
+    state: started
+    enabled: True
+
+- name: Set letsencrypt certbot POST_HOOK to reload nginx
+  lineinfile:
+    path: /etc/sysconfig/certbot
+    regexp: '^POST_HOOK='
+    line: 'POST_HOOK="--post-hook ''systemctl reload nginx''"'
+
+# self-signed cert task takes care of this
+#- name: Make sure web cert directory exists
+#  file: path=/etc/pki/web state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
+
+- name: Create link to letsencrypt key
+  file: src="/etc/letsencrypt/live/{{ server.fqdn }}/privkey.pem" dest="/etc/pki/web/{{ server.hostname }}.key" state=link
+
+- name: Create link to letsencrypt cert
+  file: src="/etc/letsencrypt/live/{{ server.fqdn }}/fullchain.pem" dest="/etc/pki/web/{{ server.hostname }}.crt" state=link
+
+# letsencrypt layout:
+# /etc/letsencrypt/live/{{ app.name }}.example.com/
+# `privkey.pem`  : the private key for your certificate.
+# `fullchain.pem`: the certificate file used in most server software.
+# `chain.pem`    : used for OCSP stapling in Nginx >=1.3.7.
+# `cert.pem`     : will break many server configurations, and should not be used
+#                  without reading further documentation (see link below).
+
+- name: (Re)start nginx service to make sure it picks up new certs
+  service: name=nginx state=restarted enabled=yes

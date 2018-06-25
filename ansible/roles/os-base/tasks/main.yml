@@ -10,8 +10,8 @@
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
 
-- name: Make sure we have a 'qvain' group in OS
-  group: name=qvain state=present
+- name: Make sure we have app group in OS
+  group: name={{ app.name }} state=present
 
 - name: Disable SSH password authentication
   lineinfile:
@@ -23,6 +23,7 @@
 
 - include_role: name=update_packages
 
+# -wvh- removed ntp; use systemd
 - name: Ensure os common packages
   yum: name={{ item }} state=latest
   with_items:
@@ -34,10 +35,10 @@
     - curl
     - vim
     - tcl
-    - ntp
     - tree
     - zile
     - nano
+  when: deployment_environment_id not in ['production']
 
 - name: Disable SELinux (A better approach should be come up with!)
   selinux: state=permissive policy=targeted
@@ -67,36 +68,69 @@
 #    state: present
 #    line: "LC_ALL=\"fi_FI.UTF-8\""
 
-- name: Set default locale as LC_CTYPE to fi_FI.UTF-8
-  lineinfile:
-    dest: /etc/environment
-    state: present
-    line: "LC_CTYPE=\"fi_FI.UTF-8\""
+#- name: Set default locale as LC_CTYPE to fi_FI.UTF-8
+#  lineinfile:
+#    dest: /etc/environment
+#    state: present
+#    line: "LC_CTYPE=\"fi_FI.UTF-8\""
+
+- name: Check for systemd
+  command: localectl
+  register: is_systemd
+  #ignore_errors: yes
+
+- name: Write default locale file
+  copy:
+    content: |
+      # -wvh- file written by ansible
+      #LANG="en_GB.UTF8"
+      LC_CTYPE="fi_FI.UTF8"
+      LC_NUMERIC="fi_FI.UTF8"
+      LC_TIME="en_GB.UTF8"
+      LC_COLLATE="fi_FI.UTF8"
+      LC_MONETARY="fi_FI.UTF8"
+      LC_MESSAGES="en_GB.UTF8"
+      LC_PAPER="fi_FI.UTF8"
+      LC_NAME="fi_FI.UTF8"
+      LC_ADDRESS="fi_FI.UTF8"
+      LC_TELEPHONE="fi_FI.UTF8"
+      LC_MEASUREMENT="fi_FI.UTF8"
+      LC_IDENTIFICATION="en_GB.UTF8"
+      #LC_ALL=
+    dest: /etc/locale.conf
+    owner: root
+  when: is_systemd
 
 - name: Set timezone to Europe/Helsinki
   timezone:
     name: Europe/Helsinki
 
+- name: Enable NTP (systemd)
+  command: timedatectl set-ntp true
+
+- stat: path=/var/log/journal
+  register: journal_log
+
+# -wvh- make persistent storage
+#       commands:
+#         mkdir /var/log/journal
+#         systemd-tmpfiles --create --prefix /var/log/journal
+#         systemctl restart systemd-journald
+#       permissions:
+#         drwxr-sr-x root:systemd-journal
+#       clean:
+#          journalctl --vacuum-time=1years
+- name: Switch systemd to persistent logging
+  block:
+  - name: Create persistent log directory for systemd
+    file: path=/var/log/journal state=directory owner=root group=systemd-journal mode=2755
+  - name: Run systemd-tmpfiles on journal log directory
+    command: systemd-tmpfiles --create --prefix /var/log/journal
+  - name: Reload systemd-journald
+    command: killall -USR1 systemd-journald
+  when: not journal_log.stat.exists
+
 - include_role: name=users
 
-- name: Create /srv/qvain base directory
-  file: path=/srv/qvain state=directory owner={{ app_user }} group=qvain mode=0755
-
-# - block:
-
-    # - name: Copy bash aliases to {{ app_user }} user home dir
-    #   template: src=templates/bash_aliases dest=/home/{{ app_user }}/.bash_aliases owner={{ app_user }} group={{ app_user }}
-
-    # - name: Touch .bash_profile
-    #   file: path=/home/{{ app_user }}/.bash_profile owner={{ app_user }} group={{ app_user }} state=touch
-
-    # - name: Add printing of bash aliases to {{ app_user }} profile
-    #   lineinfile:
-    #     dest: "/home/{{ app_user }}/.bash_profile"
-    #     state: present
-    #     line: "{{ item }}"
-    #   with_items:
-    #     - "source .bash_aliases"
-    #     - "aliases"
-
-  # when: deployment_environment_id in ['local_development', 'playground', 'test']
+- name: Create app base directory
+  file: path={{ app.base }} state=directory owner={{ app.user }} group={{ app.user }} mode=0755

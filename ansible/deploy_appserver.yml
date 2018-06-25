@@ -1,9 +1,7 @@
 ---
 
 - hosts: appservers
-  vars:
-    is_provision: false
   become: yes
   roles:
     - deploy_appserver
-    - { role: reboot, when: deployment_environment_id != 'local_development' }
+    #- { role: reboot, when: deployment_environment_id != 'local_development' }

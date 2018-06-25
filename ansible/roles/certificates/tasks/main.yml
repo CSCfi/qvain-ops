@@ -1,31 +1,16 @@
-# THIS WHOLE ROLE NEEDS TO BE REVISED SINCE AT LEAST THE CERTIFICATES CANNOT ANY MORE BE PLACED TO THE DIR THAT IS USED IN METAX, I.E. NGINX DIR
+- name: Make sure dummy self-signed web cert directory exists
+  file: path=/etc/pki/selfsigned state=directory recurse=yes
 
-- name: Create self-signed SSL cert and private key
-  command: openssl req -x509 -nodes -subj "/C=FI/ST=Uusimaa/L=Espoo/O=CSC/CN={{ server_domain_name }}" -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl_certs/{{ server_certificate_name }}.key -out /etc/nginx/ssl_certs/nginx-selfsigned.crt creates=/etc/nginx/ssl_certs/{{ server_certificate_name }}.crt
-  when: deployment_environment_id == 'local_development' or deployment_environment_id == 'playground'
+- name: Create dummy self-signed certificate
+  command: openssl req -x509 -nodes -subj "/C=FI/ST=Uusimaa/L=Helsinki/O=National Library of Finland/CN={{ server.fqdn }}" -days 365 -newkey rsa:2048 -keyout /etc/pki/selfsigned/{{ server.hostname }}.key -out /etc/pki/selfsigned/{{ server.hostname }}.crt
+  args:
+    creates: /etc/pki/selfsigned/{{ server.hostname }}.crt
 
-# HERE WE SHOULD IMPLEMENT INSTALLING SERVER SSL CERTIFICATE FOR OTHER THAN LOCAL DEV ENVS
+- name: Make sure web cert directory exists
+  file: path=/etc/pki/web state=directory recurse=yes
 
-# THIS IS THE METAX STUFF
-- block:
+- name: Create link to dummy self-signed key
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.key" dest="/etc/pki/web/{{ server.hostname }}.key" state=link
 
-    - name: Install dos2unix
-      yum: name=dos2unix state=latest
-
-    - name: Copy CA-signed primary certificate and private key
-      copy: src=files/certificates/{{ item }} dest=/etc/nginx/ssl_certs/{{ item }} owner=root group=root mode=0644
-      with_items:
-        - "{{ server_certificate_name }}.crt"
-        - "{{ server_certificate_name }}.key"
-
-    - name: Concatenate intermediate certificate to primary certificate
-      lineinfile:
-        line: "{{ lookup('file', 'files/certificates/{{ intermediate_certificate_name }}') }}"
-        dest: "/etc/nginx/ssl_certs/{{ server_certificate_name }}.crt"
-        state: present
-
-    - name: Fix concatenated file carriage returns
-      command: dos2unix /etc/nginx/ssl_certs/{{ server_certificate_name }}.crt
-
-  # Add envs to the when below as new certificates will become available for the target env
-  when: deployment_environment_id == 'test' or deployment_environment_id == 'stable'
+- name: Create link to dummy self-signed cert
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.crt" dest="/etc/pki/web/{{ server.hostname }}.crt" state=link

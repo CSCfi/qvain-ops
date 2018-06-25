@@ -1,0 +1,9 @@
+- name: Add Haka-metadata provider
+  blockinfile:
+    dest: /etc/shibboleth/shibboleth2.xml
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK for auth-proxy #2 -->"
+    insertbefore: "<!-- Example of remotely supplied batch of signed metadata. -->"
+    content: |
+      <MetadataProvider type="XML" uri="https://rr.funet.fi/metadata/haka-test/haka-test-metadata.xml" backingFilePath="tpas-auth-proxy-metadata.xml" reloadInterval="3600">
+        <MetadataFilter type="RequireValidUntil" maxValidityInterval="2592000"/>
+      </MetadataProvider>

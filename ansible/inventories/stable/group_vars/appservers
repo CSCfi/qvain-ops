@@ -1,0 +1,14 @@
+### Configures server and API keys per environment.
+server:
+  ip: 195.148.30.68
+  fqdn: qvain-stable.csc.fi
+  hostname: qvain-test
+
+apis:
+  metax_api_hostname: metax-stable.csc.fi
+  metax_api_user: "{{ secrets.apis.metax_api_user }}"
+  metax_api_pass: "{{ secrets.apis.metax_api_pass }}"
+  token_key: "{{ secrets.apis.token_key }}"
+  oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
+  oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
+  oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"

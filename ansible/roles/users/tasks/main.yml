@@ -1,17 +1,24 @@
+# removed wheel for app user
 - name: Add app user to OS
-  user: name={{ app_user }} groups=wheel,qvain append=yes state=present createhome=yes
+  user: name={{ app.user }} group={{ app.user }} groups={{ app.user }} append=yes state=present createhome=yes
 
+# note: can't set umask for home directory creation :(
 - block:
     - name: Add users that should be able to log in to OS
-      user: name={{ item }} groups=wheel,qvain append=yes state=present createhome=yes
-      with_items: "{{ os_users }}"
+      user: name={{ item.key }} groups=wheel,{{ app.user }} comment={{ item.value.name }} append=yes state=present create_home=yes
+      with_dict: "{{ os_users }}"
+      register: user_added
+
+    - name: Make sure new users' home directory is not world-readable
+      file: path={{ item }} mode=0700
+      with_items: "{{ user_added.results | selectattr('changed') | map(attribute='home') | list }}"
 
     - name: Create .ssh folders to login users' home folders in cloud environment
-      file: path=/home/{{ item }}/.ssh owner={{ item }} mode=0700 state=directory
-      with_items: "{{ os_users }}"
+      file: path=/home/{{ item.key }}/.ssh owner={{ item.key }} mode=0700 state=directory
+      with_dict: "{{ os_users }}"
 
     - name: Add login users' public keys to cloud environment
-      copy: src=files/public_keys/{{ item }}.pub dest=/home/{{ item }}/.ssh/authorized_keys owner={{ item }} mode=0700
-      with_items: "{{ os_users }}"
+      copy: content={{ item.value.key }} dest=/home/{{ item.key }}/.ssh/authorized_keys owner={{ item.key }} mode=0700
+      with_dict: "{{ os_users }}"
 
   when: deployment_environment_id != 'local_development'
