@@ -11,9 +11,9 @@
     - nginx
     - role: letsencrypt
       when: deployment_environment_id in ['test', 'stable']
-    - go
-    - role: provision_app
+    - role: go
       when: deployment_environment_id != 'production'
+    - role: provision_app
     - role: app_config
       when: deployment_environment_id == 'production'
   handlers:
