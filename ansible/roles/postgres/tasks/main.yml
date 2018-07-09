@@ -66,14 +66,14 @@
 #    regexp: "listen_addresses ="
 #    line: "listen_addresses = '*'"
 
-- name: Change Postgres configuration log_timezone to Finnish locale
+- name: Change Postgres configuration log_timezone to Europe/Helsinki
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "log_timezone ="
     line: "log_timezone = 'Europe/Helsinki'"
 
-- name: Change Postgres configuration timezone to Finnish locale
+- name: Change Postgres configuration timezone to Europe/Helsinki
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
@@ -87,33 +87,39 @@
     regexp: "client_encoding ="
     line: "client_encoding = 'UTF8'"
 
-- name: Change Postgres configuration lc_messages to Finnish locale UTF8
+# just use English
+- name: Change Postgres configuration lc_messages to English
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_messages ="
-    line: "lc_messages = 'en_US.utf8'"
+    line: "lc_messages = 'en_GB.utf8'"
 
-- name: Change Postgres configuration lc_monetary to Finnish locale UTF8
+# Don't mess with locale here.
+# We don't want to get confusing semi-localised notifications from the database level,
+# translations and localised formatting are a UI problem.
+# We set collate and ctype to Finnish/Scandinavian settings on database creation, below;
+# those might be necessary to get umlauts sorted correctly.
+- name: Change Postgres configuration lc_monetary to C
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_monetary ="
-    line: "lc_monetary = 'fi_FI.utf8'"
+    line: "lc_monetary = 'C'"
 
-- name: Change Postgres configuration lc_numeric to Finnish locale UTF8
+- name: Change Postgres configuration lc_numeric to C
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_numeric ="
-    line: "lc_numeric = 'fi_FI.utf8'"
+    line: "lc_numeric = 'C'"
 
-- name: Change Postgres configuration lc_time to Finnish locale UTF8
+- name: Change Postgres configuration lc_time to C
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "lc_time ="
-    line: "lc_time = 'fi_FI.utf8'"
+    line: "lc_time = 'C'"
 
 - name: Change Postgres configuration default_text_search_config to Finnish
   lineinfile:
@@ -122,14 +128,38 @@
     regexp: "default_text_search_config ="
     line: "default_text_search_config = 'pg_catalog.finnish'"
 
-- name: Optimize Postgres configuration shared_buffers
+- name: Optimise Postgres WAL for larger machines
+  block:
+    - name: Increase checkpoint timeout
+      # increase x3
+      lineinfile:
+        dest: "{{ pg_data_path }}/postgresql.conf"
+        state: present
+        regexp: "checkpoint_timeout ="
+        line: "checkpoint_timeout = 15min"
+    - name: Increase max WAL size
+      # we don't expect a hugh WAL size, so increase in line with checkpoint timeout
+      lineinfile:
+        dest: "{{ pg_data_path }}/postgresql.conf"
+        state: present
+        regexp: "max_wal_size ="
+        line: "max_wal_size = 3GB"
+    - name: Adapt checkpoint completion target to checkpoint timeout
+      # (ct - 2min) / ct = 86.666 = ~0.8 (check also vm.dirty_expire_centisecs)
+      lineinfile:
+        dest: "{{ pg_data_path }}/postgresql.conf"
+        state: present
+        regexp: "checkpoint_completion_target ="
+        line: "checkpoint_completion_target = 0.8"
+
+- name: Optimise Postgres configuration shared_buffers
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
     regexp: "shared_buffers ="
     line: "shared_buffers = '{{ (ansible_memtotal_mb*0.25) | int }}MB'"
 
-- name: Optimize Postgres configuration effective_cache_size
+- name: Optimise Postgres configuration effective_cache_size
   lineinfile:
     dest: "{{ pg_data_path }}/postgresql.conf"
     state: present
