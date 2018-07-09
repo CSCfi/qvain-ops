@@ -25,6 +25,6 @@
   become_user: "{{ app.user }}"
   register: build_cmd
 
-- name: Reload backend process
+- name: Restart backend process
   systemd: name={{ app.name }}.service state=restarted
   when: build_cmd is succeeded
