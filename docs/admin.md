@@ -72,7 +72,7 @@ This gives you the message `"starting http server"` on host `"qvain.example.com"
 You can follow the live log with journalctl:
 
 ```shell
-[root@qvain-test ~]# journalctl -fu qvain
+# journalctl -fu qvain
 ```
 
 
@@ -86,7 +86,7 @@ If you want to run Qvain commands – most of which need some configuration – 
 set -a; source ~/.env/qvain.env; set +a
 ```
 
-... this will export the environment variables to your current shell.
+... this will export the environment variables to your current shell. On production systems, the environment file can be found in the home of the user the service runs as: `~qvain/.env`, if that user is `qvain`.
 
 The service binary also has a handful of command line flags, most of which allow overriding environment variables:
 
