@@ -135,7 +135,7 @@ Systemd service and Qvain log output:
 Only Qvain logging output for the last hour (note the `-t`):
 
 ```shell
-# journalctl -t qvain --since "20 hour ago"
+# journalctl -t qvain --since "1 hour ago"
 ```
 
 Qvain does not log a lot: non-debug output is estimated at about 2-3 lines per request, and about double that when debug is set.
