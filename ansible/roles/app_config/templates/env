@@ -1,9 +1,10 @@
 # {{ app.name }} env file
 APP_DEBUG={{ 1 if deployment_environment_id != 'production' else 0 }}
 APP_HOSTNAME={{ server.fqdn }}
+APP_OIDC_PROVIDER_NAME={{ apis.oidc_provider_name }}
+APP_OIDC_PROVIDER_URL={{ apis.oidc_provider_url }}
 APP_OIDC_CLIENT_ID={{ apis.oidc_client_id }}
 APP_OIDC_CLIENT_SECRET={{ apis.oidc_client_secret }}
-APP_OIDC_PROVIDER_URL={{ apis.oidc_provider_url }}
 APP_TOKEN_KEY={{ apis.token_key }}
 APP_METAX_API_HOST={{ apis.metax_api_hostname }}
 APP_METAX_API_USER={{ apis.metax_api_user }}
