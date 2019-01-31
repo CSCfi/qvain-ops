@@ -18,6 +18,14 @@ ProtectSystem=full
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 SecureBits=keep-caps
 StandardOutput=journal
+
+# work-around for hardware issues in the cPouta storage system:
+#   when the storage system blocks writes for more than 2 minutes, the kernel kills journald;
+#   the service gets a SIGPIPE and terminates;
+#   systemd considers SIGPIPE a clean exit and keeps the service in failed state;
+#   service is down.
+# This works around the issue by restarting the service if it died due to SIGPIPE.
+RestartForceExitStatus=SIGPIPE
 # Restart=on-failure
 # RestartSec=3s
 
