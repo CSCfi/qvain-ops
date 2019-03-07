@@ -6,17 +6,20 @@
 .vagrant/
 
 # ignore qvain-app because it is another git-repo
-qvain-app/
+/qvain-app/
+
+# ignore release tree
+/release/
 
 # ansible retry-file
 ansible/site.retry
 
 # ansible fact cache
 ansible/.cache/
+ansible/facts/
 
 # Ansible script related
-ansible/inventories/test/group_vars/test
-ansible/inventories/test/host_vars
+ansible/inventories/test/
 ansible/files/
 
 # Other
