@@ -1,8 +1,8 @@
 ### Configures server and API keys per environment.
 server:
-  ip: 193.167.189.104
-  fqdn: qvain-test.csc.fi
-  hostname: qvain-test
+  ip: 127.0.0.1
+  fqdn: qvain-dev.csc.local
+  hostname: qvain-dev
 
 apis:
   metax_api_hostname: metax-test.csc.fi

@@ -1,2 +1,5 @@
 [appservers]
-localhost ansible_host=127.0.0.1 ansible_connection=local ansible_user=vagrant
+qvain-dev ansible_host=127.0.0.1 ansible_connection=local ansible_user=vagrant
+
+[local_development:children]
+appservers

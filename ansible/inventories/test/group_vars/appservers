@@ -11,4 +11,5 @@ apis:
   token_key: "{{ secrets.apis.token_key }}"
   oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
   oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
+  oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
   oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"

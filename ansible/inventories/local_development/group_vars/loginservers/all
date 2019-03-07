@@ -1,0 +1,11 @@
+server:
+  ip: 195.148.30.78
+  fqdn: qvain-login-test.csc.fi
+  hostname: qvain-login-test
+
+database:
+  host:
+  name: id
+  user: id_db_user
+  password: md50a529bf7fcfa967eb2657acf5be77499
+  # CO:Oeof2-39

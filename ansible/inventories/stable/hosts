@@ -6,4 +6,4 @@ qvain-login-stable ansible_host="{{ server.ip }}" ansible_connection="ssh" ansib
 
 [test:children]
 appservers
-loginservers
+
