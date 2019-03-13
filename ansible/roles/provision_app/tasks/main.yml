@@ -14,14 +14,14 @@
     - file: src={{ app.base }}/go/src/{{ app.import_path }} dest={{ app.source }} state=link owner={{ app.user }} group={{ app.user }} mode=0755
   become_user: "{{ app.user }}"
 
-- include: copy_deploy_keys.yml
+#- include: copy_deploy_keys.yml
 
-- name: Clone project source repo
-  git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-api-deploy-key.pem accept_hostkey=yes
-  become_user: "{{ app.user }}"
+#- name: Clone project source repo
+#  git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
+#  become_user: "{{ app.user }}"
 
 - name: Clone project web repo
-  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }} key_file={{ app.base }}/{{ app.name }}-js-deploy-key.pem accept_hostkey=yes
+  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
   become_user: "{{ app.user }}"
   when: app.webrepo is defined
 

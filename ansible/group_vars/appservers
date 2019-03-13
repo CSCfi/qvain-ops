@@ -7,9 +7,9 @@ app:
   source: "{{ app_base_path }}/source"
   webpath: "{{ app_base_path }}/web"
   sqlschema: schema/schema.sql
-  repo: git@github.com:NatLibFi/qvain-api.git
+  repo: https://github.com/NatLibFi/qvain-api
   import_path: github.com/NatLibFi/qvain-api
-  webrepo: git@github.com:NatLibFi/qvain-js.git
+  webrepo: https://github.com/NatLibFi/qvain-js
   branch: "{{ repo_branch }}"
 
 # How to calculate the Go import_path if not set manually:
