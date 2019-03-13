@@ -33,7 +33,8 @@ Vagrant.configure("2") do |config|
         server.vm.synced_folder "./", "/qvain", :mount_options => ["dmode=777,fmode=777"]
     else
         # Basic VM synced folder mount
-        #server.vm.synced_folder "./qvain-api", "/qvain/qvain-api", :mount_options => ["dmode=755,fmode=644"], create: true
+        server.vm.synced_folder "./qvain-js", "/qvain/qvain-js", :mount_options => ["dmode=755,fmode=644"], create: true
+        server.vm.synced_folder "./qvain-api", "/qvain/qvain-api", :mount_options => ["dmode=755,fmode=644"], create: true
         server.vm.synced_folder "./ansible", "/qvain/ansible", :mount_options => ["dmode=775,fmode=775"]
     end
 
