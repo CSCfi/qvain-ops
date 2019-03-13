@@ -25,9 +25,19 @@
 
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
-  yum:
-    name: ['@Development tools', 'htop', 'git', 'zip', 'unzip', 'curl', 'vim', 'tcl', 'tree', 'zile', 'nano']
-    state: latest
+  yum: name={{ item }} state=latest
+  with_items:
+#    - '@Development tools'
+    - htop
+    - git
+    - zip
+    - unzip
+    - curl
+    - vim
+    - tcl
+    - tree
+    - zile
+    - nano
   when: deployment_environment_id not in ['production']
 
 - name: Disable SELinux (A better approach should be come up with!)
@@ -120,7 +130,7 @@
     command: pkill -USR1 systemd-journald
     when: deployment_environment_id != 'production'
   - name: Reload systemd-journald (production)
-    command: killall5 -USR1 systemd-journald
+    command: pkill -USR1 systemd-journald
     when: deployment_environment_id == 'production'
   when: not journal_log.stat.exists and not deployment_environment_id == 'local_development'
 

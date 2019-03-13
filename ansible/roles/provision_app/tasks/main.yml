@@ -11,6 +11,17 @@
 
 - include_role: name=install_app
 
+#- include: copy_deploy_keys.yml
+
+#- name: Clone project source repo
+#  git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
+#  become_user: "{{ app.user }}"
+
+- name: Clone project web repo
+  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
+  become_user: "{{ app.user }}"
+  when: app.webrepo is defined
+
 - name: Check if we can find the schema in our source code repo
   stat:
     path: "{{ app.base }}/{{ app.sqlschema }}"

@@ -1,2 +1,75 @@
+
+shared_folder_base_path: /qvain
+repo_branch: next
+
 deployment_environment_id: local_development
-repo_branch: master
+server_certificate_name: selfsigned
+server_domain_name: qvain.csc.local
+
+server:
+  ip: 127.0.0.1
+  fqdn: qvain-local.fairdata.fi
+  hostname: qvain-local
+
+apis:
+  metax_api_hostname: metax.fairdata.fi
+  metax_api_user: "{{ secrets.apis.metax_api_user }}"
+  metax_api_pass: "{{ secrets.apis.metax_api_pass }}"
+  token_key: "{{ secrets.apis.token_key }}"
+  oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
+  oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
+  oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
+  oidc_provider_name: fairdata
+
+app:
+  name: qvain
+  user: qvain
+  base: "{{ app_base_path }}"
+  source: "{{ app_base_path }}/source"
+  webpath: "{{ app_base_path }}/web"
+  sqlschema: schema/schema.sql
+  repo: https://github.com/NatLibFi/qvain-api
+  import_path: github.com/NatLibFi/qvain-api
+  webrepo: https://github.com/NatLibFi/qvain-js
+  branch: "{{ repo_branch }}"
+
+
+
+qvain_database:
+  name: qvain_db
+  user: qvain_db_user
+  password: Rs9VJTsWjs2BqnF8
+
+redis:
+  instance_common:
+    master_host: '127.0.0.1'
+    master_port: 6379
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+    password: password
+
+  instance_1:
+    number: 1
+    port: 6379
+    listen_hosts: '127.0.0.1'
+
+  instance_2:
+    number: 2
+    port: 6380
+    listen_hosts: '127.0.0.1'
+
+  sentinel_common:
+    service_name: 'metax-master'
+    quorum: 2 # how many sentinels need to agree before switching master
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+
+  sentinel_1:
+    number: 1
+    port: 5000
+
+  sentinel_2:
+    number: 2
+    port: 5001
+
+  sentinel_3:
+    number: 3
+    port: 5002

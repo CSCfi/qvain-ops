@@ -5,8 +5,11 @@
 # Ignore vagrant cache directory
 .vagrant/
 
-# ignore qvain-app because it is another git-repo
-/qvain-app/
+# ignore qvain-api because it is another git-repo
+/qvain-api/
+/qvain-js/
+
+ansible/*.retry
 
 # ignore release tree
 /releases/
