@@ -16,9 +16,9 @@
 
 #- include: copy_deploy_keys.yml
 
-#- name: Clone project source repo
-#  git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
-#  become_user: "{{ app.user }}"
+- name: Clone project source repo
+  git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
+  become_user: "{{ app.user }}"
 
 - name: Clone project web repo
   git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
@@ -51,12 +51,12 @@
     systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
   when: service_file.stat.exists
 
-- name: Import dependencies
-  command: go get -v -d {{ app.import_path }}/...
-  environment:
-    GOPATH: "{{ app.base }}/go"
-    GOBIN: "{{ app.base }}/go/bin"
-  become_user: "{{ app.user }}"
+#- name: Import dependencies
+#  command: go get -v -d {{ app.import_path }}/...
+#  environment:
+#    GOPATH: "{{ app.base }}/go"
+#    GOBIN: "{{ app.base }}/go/bin"
+#  become_user: "{{ app.user }}"
 
 # this is a separate step because we install this binary (no -d argument)
 - name: Import build dependencies
