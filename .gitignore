@@ -7,6 +7,7 @@
 
 # ignore qvain-app because it is another git-repo
 qvain-app/
+qvain-api/
 
 # ansible retry-file
 ansible/site.retry

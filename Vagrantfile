@@ -7,13 +7,13 @@
 # Pre-provisioner shell script installs Ansible into the guest and continues
 # to provision rest of the system in the guest. Works also on Windows.
 $script = <<SCRIPT
-# if [ ! -f /vagrant_bootstrap_done.info ]; then
+if [ ! -f /vagrant_bootstrap_done.info ]; then
   sudo yum update
   sudo yum -y install epel-release ansible git
   cd /qvain/ansible
-  ansible-playbook -i inventories/local_development -e @./secrets-local.yaml site_provision.yml -vvvv
-  # sudo touch /vagrant_bootstrap_done.info
-# fi
+  ansible-playbook -i inventories/stable -e @./secrets-local.yaml site_provision.yml
+  sudo touch /vagrant_bootstrap_done.info
+fi
 SCRIPT
 
 
@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
     else
         # Basic VM synced folder mount
         #server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=755,fmode=644"]
-		server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=777,fmode=777"]
+        server.vm.synced_folder "", "/qvain", :mount_options => ["dmode=777,fmode=777"]
     end
 
     server.vm.provision "shell", inline: $script
@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
     server.vm.provider "virtualbox" do |vbox|
         vbox.name = "qvain_local_development"
         vbox.gui = false
-        vbox.memory = 4096
+        vbox.memory = 2046
         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
     end
   end

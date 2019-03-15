@@ -1,8 +1,11 @@
 ### Configures server and API keys per environment.
+
+repo_branch: next
+
 server:
   ip: 195.148.30.68
   fqdn: qvain-stable.csc.fi
-  hostname: qvain-test
+  hostname: qvain-stable
 
 apis:
   metax_api_hostname: metax-stable.csc.fi
@@ -12,3 +15,4 @@ apis:
   oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
   oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
   oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
+  oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
