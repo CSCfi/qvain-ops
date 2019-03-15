@@ -13,12 +13,9 @@
   when: deployment_environment_id != 'production'
 
 - name: Install PostgreSQL 9 and python psycopg2
-  yum: name={{ item }} state=present
-  with_items:
-    - postgresql96
-    - postgresql96-server
-    - postgresql96-contrib
-    - python-psycopg2
+  yum:
+    name: ['postgresql96', 'postgresql96-server', 'postgresql96-contrib', 'python-psycopg2']
+    state: present
 
 - name: Create database data directory
   file: path={{ item }} state=directory owner=postgres group=postgres mode=700

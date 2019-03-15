@@ -25,19 +25,9 @@
 
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
-  yum: name={{ item }} state=latest
-  with_items:
-    - '@Development tools'
-    - htop
-    - git
-    - zip
-    - unzip
-    - curl
-    - vim
-    - tcl
-    - tree
-    - zile
-    - nano
+  yum:
+    name: ['@Development tools', 'htop', 'git', 'zip', 'unzip', 'curl', 'vim', 'tcl', 'tree', 'zile', 'nano']
+    state: latest
   when: deployment_environment_id not in ['production']
 
 - name: Disable SELinux (A better approach should be come up with!)
