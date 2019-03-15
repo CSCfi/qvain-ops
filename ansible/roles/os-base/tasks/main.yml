@@ -132,7 +132,7 @@
   - name: Reload systemd-journald (production)
     command: killall5 -USR1 systemd-journald
     when: deployment_environment_id == 'production'
-  when: not journal_log.stat.exists
+  when: not journal_log.stat.exists and not deployment_environment_id == 'local_development'
 
 - include_role: name=users
 
