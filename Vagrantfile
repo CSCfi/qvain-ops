@@ -11,7 +11,7 @@ $script = <<SCRIPT
   sudo yum update
   sudo yum -y install epel-release ansible git
   cd /qvain/ansible
-  ansible-playbook -i inventories/local_development -e @./secrets-local.yaml site_provision.yml -vvvv
+  ansible-playbook -i inventories/test -e @./secrets-local.yaml site_provision.yml -vvvv
   # sudo touch /vagrant_bootstrap_done.info
 # fi
 SCRIPT
