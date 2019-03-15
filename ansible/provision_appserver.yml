@@ -14,8 +14,6 @@
     - role: go
       when: deployment_environment_id != 'production'
     - role: provision_app
-    - role: app_config
-      when: deployment_environment_id == 'production'
   handlers:
     - name: restart sshd
       service: name=sshd state=restarted

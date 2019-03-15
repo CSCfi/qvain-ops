@@ -1,7 +1,0 @@
-- name: Copy github deploy key for api
-  #copy: src={{ app.name }}-api-deploy-key.pem dest={{ app.base }} owner={{app.user}} group={{app.user}} mode=600
-  copy: content={{ certs.api_deploy_key }} dest={{ app.base }}/{{ app.name }}-api-deploy-key.pem owner={{app.user}} group={{app.user}} mode=600
-
-- name: Copy github deploy key for web
-  #copy: src={{ app.name }}-js-deploy-key.pem dest={{ app.base }} owner={{app.user}} group={{app.user}} mode=600
-  copy: content={{ certs.js_deploy_key }} dest={{ app.base }}/{{ app.name }}-js-deploy-key.pem owner={{app.user}} group={{app.user}} mode=600
