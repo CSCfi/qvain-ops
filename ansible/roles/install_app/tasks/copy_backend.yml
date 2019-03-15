@@ -1,0 +1,96 @@
+### -wvh- rsync backend after building locally
+
+- set_fact: release_tree_path="{{ playbook_dir | dirname }}/releases"
+
+- debug:
+    msg: "using release tree in {{ release_tree_path }}"
+
+- name: check for local release tree
+  local_action: stat path="{{ release_tree_path }}"
+  become: no
+  register: release_tree
+- debug:
+    msg: "release tree exists and is a directory"
+  when: release_tree.stat.isdir is defined and release_tree.stat.isdir
+
+- debug:
+    var: release_tree
+
+- fail:
+    msg: "release tree not found; expected directory or symlink `releases` in ansible's parent directory: {{ playbook_dir | dirname }}"
+  when: release_tree.stat.isdir is undefined or not (release_tree.stat.isdir or release_tree.stat.islnk)
+
+# This is too dangerous as any mistake in quoting in the protect filter will erase all other directories from the app path on the server when we rsync with `delete` option.
+# Note: Ansible/yaml doesn't seem to be able to pass double quotes inside the yaml double quotes for this module;
+#       the protect filter will always have escaped quotes when it shouldn't.
+#- name: sync backend
+#  become: no
+#  synchronize:
+#    src: "{{ release_tree_path }}/{{deployment_environment_id}}"
+#    dest: "{{ app.base }}/"
+#    rsync_opts:
+#      - "--no-motd"
+#      - "--filter=protect\ /*"
+#    copy_links: yes
+#    delete: yes
+#    recursive: yes
+#    owner: no
+#    group: no
+#    times: yes
+#    use_ssh_args: yes
+#    rsync_path: "sudo rsync"
+
+# All this mess just to rsync a directory /path/release/<tag>/*:
+#
+# - the rsync module doesn't accept globs, but we need to use globbing to be able to use the `delete` parameter safely;
+# - the fileglob module in Ansible 2.x doesn't return directories;
+# - the find module runs on remote hosts only;
+# - the find module tries to become some other user by default if run as a local action;
+# - the find module requires a lot of trial and error to find the proper incantation to get the proper ownership applied.
+#
+# So get the top-level paths from the app release and rsync them one by one then...
+- name: Find top-level files and directories from app release
+  local_action: find paths="{{ release_tree_path }}/{{deployment_environment_id}}" file_type=any recurse=no
+  become: no
+  register: backend_files
+
+#- debug:
+#    var: backend_files
+#
+#- name: "loop through list from a variable"
+#  debug:
+#    msg: "An item: {{item}}"
+#  with_items: "{{ backend_files.files | map(attribute='path') | list }}"
+
+- name: save file stat of backend binary
+  stat:
+    path: "{{ app.base }}/bin/qvain-backend"
+    get_checksum: yes
+  register: old_binary
+
+- name: rsync release
+  become: no
+  synchronize:
+    src: "{{ item }}"
+    dest: "{{ app.base }}/"
+    rsync_opts:
+      - "--no-motd"
+    copy_links: yes
+    delete: yes
+    recursive: yes
+    owner: no
+    group: no
+    times: yes
+    use_ssh_args: yes
+    rsync_path: "sudo rsync"
+  with_items: "{{ backend_files.files | map(attribute='path') | list }}"
+  register: rsync
+
+- name: reload backend service if binary was updated
+  stat:
+    path: "{{ app.base }}/bin/qvain-backend"
+    get_checksum: yes
+  changed_when: (not old_binary.stat.exists) or (old_binary.stat.checksum != new_binary.stat.checksum)
+  register: new_binary
+  notify:
+    - restart qvain

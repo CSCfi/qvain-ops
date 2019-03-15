@@ -1,0 +1,9 @@
+---
+
+- hosts: appservers
+  become: yes
+  roles:
+    - install_app
+  handlers:
+    - name: restart qvain
+      service: name=qvain state=restarted

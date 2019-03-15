@@ -9,7 +9,7 @@
 /qvain-app/
 
 # ignore release tree
-/release/
+/releases/
 
 # ansible retry-file
 ansible/site.retry

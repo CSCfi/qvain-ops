@@ -1,0 +1,18 @@
+### This task creates the schema and then runs the app's SQL script to create tables and other objects.
+
+- name: Create database schema with the database user's name
+  postgresql_schema:
+    database: "{{ database.name }}"
+    name: "{{ database.user }}"
+    owner: "{{ database.user }}"
+  become_user: postgres
+  register: create_schema
+
+- name: Initialise database schema
+  block:
+    - name: Set default search_path for database user to own schema
+      command: psql -v ON_ERROR_STOP=1 -d {{ database.name }} -c 'ALTER ROLE {{ database.user }} SET search_path = "$user"'
+    - name: Create database tables
+      command: psql -v ON_ERROR_STOP=1 -d {{ database.name }} -f {{ app.base }}/schema/schema.sql
+  become_user: postgres
+  when: create_schema.changed

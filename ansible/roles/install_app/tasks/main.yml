@@ -1,0 +1,10 @@
+- debug:
+    msg: "deployment_environment_id is {{ deployment_environment_id }}"
+
+#- include: copy_backend.yml
+#  when: deployment_environment_id in ['testing', 'stable']
+
+- block:
+    - include: copy_backend.yml
+    - include: create_db_schema.yml
+  when: deployment_environment_id in ['test', 'stable']
