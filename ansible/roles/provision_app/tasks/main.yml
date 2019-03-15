@@ -1,4 +1,9 @@
 # register real app home directory as a fact
+
+# - name: checkpoint
+#   debug:
+#     msg: checkpoint
+
 - user:
     name: "{{ app.user }}"
   register: app_user_info
@@ -10,8 +15,6 @@
 #- include: copy_backend.yml
 
 - include_role: name=install_app
-
-#- include: copy_deploy_keys.yml
 
 - name: Clone project source repo
   git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
@@ -48,6 +51,10 @@
     systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
   when: service_file.stat.exists
 
+- name: Remove bench directory
+  file:
+    state: absent
+    path: /srv/qvain/go/src/github.com/NatLibFi/qvain-api/internal/bench
 
 - name: Import dependencies
  command: go get -v -d {{ app.import_path }}/...
