@@ -57,11 +57,11 @@
     path: /srv/qvain/go/src/github.com/NatLibFi/qvain-api/internal/bench
 
 - name: Import dependencies
- command: go get -v -d {{ app.import_path }}/...
- environment:
-   GOPATH: "{{ app.base }}/go"
-   GOBIN: "{{ app.base }}/go/bin"
- become_user: "{{ app.user }}"
+  command: go get -v -d {{ app.import_path }}/...
+  environment:
+    GOPATH: "{{ app.base }}/go"
+    GOBIN: "{{ app.base }}/go/bin"
+  become_user: "{{ app.user }}"
 
 # this is a separate step because we install this binary (no -d argument)
 - name: Import build dependencies

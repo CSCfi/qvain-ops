@@ -15,7 +15,7 @@ ansible/*.retry
 /releases/
 
 # ansible retry-file
-ansible/site.retry
+ansible/*.retry
 
 # ansible fact cache
 ansible/.cache/

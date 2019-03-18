@@ -26,6 +26,7 @@
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
   yum: name={{ item }} state=latest
+  retries: 2
   with_items:
 #    - '@Development tools'
     - htop
@@ -127,10 +128,10 @@
   - name: Run systemd-tmpfiles on journal log directory
     command: systemd-tmpfiles --create --prefix /var/log/journal
   - name: Reload systemd-journald
-    command: pkill -USR1 systemd-journald
+    command: killall5 -USR1 systemd-journald
     when: deployment_environment_id != 'production'
   - name: Reload systemd-journald (production)
-    command: pkill -USR1 systemd-journald
+    command: killall5 -USR1 systemd-journald
     when: deployment_environment_id == 'production'
   when: not journal_log.stat.exists and not deployment_environment_id == 'local_development'
 
