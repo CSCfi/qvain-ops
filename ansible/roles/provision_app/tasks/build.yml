@@ -62,7 +62,6 @@
 - name: Clone project web repo
   git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
   become_user: "{{ app.user }}"
-  when: app.webrepo is defined
   when: deployment_environment_id != 'local_development'
 
 - name: Check if we can find the schema in our source code repo
