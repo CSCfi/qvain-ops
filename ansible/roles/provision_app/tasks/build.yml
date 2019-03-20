@@ -11,7 +11,7 @@
 - block:
 
   - name: Clone project source repo
-    git: repo={{ app.repo }} dest="/qvain/qvain-api" version={{ app.branch }}
+    git: repo={{ app.repo }} dest="{{ shared_backend_folder_path }}" version={{ app.branch }}
     become_user: "{{ app.user }}"
 
   - name: Make GOPATH directory structure and create link to repo
@@ -19,8 +19,8 @@
       - file: path={{ app.base }}/go state=directory owner={{ app.user }} group={{ app.user }} mode=0755
       - file: path={{ app.base }}/go/src/github.com state=directory owner={{ app.user }} group={{ app.user }} mode=0755
       - file: path={{ app.base }}/go/src/github.com/NatLibFi state=directory owner={{ app.user }} group={{ app.user }} mode=0755
-      - file: src="/qvain/qvain-api" dest={{ app.base }}/go/src/github.com/NatLibFi/qvain-api state=link owner={{ app.user }} group={{ app.user }}
-      - file: src="/qvain/qvain-api" dest={{ app.source }} state=link owner={{ app.user }} group={{ app.user }} mode=0755
+      - file: src="{{ shared_backend_folder_path }}" dest={{ app.base }}/go/src/{{ app.import_path }} state=link owner={{ app.user }} group={{ app.user }}
+      - file: src="{{ shared_backend_folder_path }}" dest={{ app.source }} state=link owner={{ app.user }} group={{ app.user }} mode=0755
     become_user: "{{ app.user }}"
 
   when: deployment_environment_id == 'local_development'
@@ -50,12 +50,12 @@
 - block:
 
   - name: Clone project web repo
-    git: repo={{ app.webrepo }} dest="/qvain/qvain-js" version={{ app.branch }}
+    git: repo={{ app.webrepo }} dest="{{ shared_frontend_folder_path }}" version={{ app.branch }}
     become_user: "{{ app.user }}"
     when: app.webrepo is defined
 
   - name: Link shared qvain-js to {{ app.webpath }}
-    file: src="/qvain/qvain-js" dest={{ app.webpath }} state=link
+    file: src="{{ shared_frontend_folder_path }}" dest={{ app.webpath }} state=link
 
   when: deployment_environment_id == 'local_development'
 
@@ -94,7 +94,7 @@
 #   file:
 #     state: absent
 #     # path: /srv/qvain/go/src/github.com/NatLibFi/qvain-api/internal/bench
-#     path: /qvain/qvain-api/internal/bench
+#     path: "{{ shared_backend_folder_path }}/internal/bench"
 
 - name: Import dependencies
   command: go get -v -d {{ app.import_path }}/...
