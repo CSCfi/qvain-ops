@@ -14,6 +14,11 @@
 # INSTALL env var tells where the binaries get copied to if the build was successful.
 #
 # WARNING: $PWD is not set correctly for the user; don't rely on it
+
+- name: TEMPORARY ---- Switch git branch to known working commit cb5a16a6ded8361dc5d2e5d057f92447bf0463bd
+  git: repo={{ app.repo }} dest="/qvain/qvain-api" version=cb5a16a6ded8361dc5d2e5d057f92447bf0463bd
+  become_user: "{{ app.user }}"
+
 - name: Build app
   command: make install
   args:

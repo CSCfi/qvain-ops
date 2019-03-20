@@ -12,7 +12,7 @@ if [ ! -f /vagrant_bootstrap_done.info ]; then
   sudo yum -y install epel-release
   sudo yum -y install ansible git
   cd /qvain/ansible
-  ansible-playbook -i inventories/local_development -e @./secrets-local.yaml site_provision.yml
+  ansible-playbook site_provision.yml
   sudo touch /vagrant_bootstrap_done.info
 fi
 SCRIPT

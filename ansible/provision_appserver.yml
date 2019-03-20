@@ -3,16 +3,16 @@
 - hosts: appservers
   become: yes
   roles:
-    - os-base
-    - postgres
-    - backup
-    - redis
-    - certificates
-    - nginx
-    - role: letsencrypt
-      when: deployment_environment_id in ['test', 'stable']
-    - role: go
-      when: deployment_environment_id not in ['production', 'builder']
+    # - os-base
+    # - postgres
+    # - backup
+    # - redis
+    # - certificates
+    # - nginx
+    # - role: letsencrypt
+    #   when: deployment_environment_id in ['test', 'stable']
+    # - role: go
+    #   when: deployment_environment_id not in ['production', 'builder']
     - role: provision_app
   handlers:
     - name: restart sshd

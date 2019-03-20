@@ -1,3 +1,4 @@
+---
 - name: Update yum cache and upgrade all packages
   yum:
     name: '*'
