@@ -17,6 +17,8 @@
 
   when: deployment_environment_id != 'local_development'
 
+- include_role: name=nginx
+
 - name: Pull app source (development)
 
   block:
@@ -50,15 +52,31 @@
   when: deployment_environment_id == 'local_development'
 
 - name: Pull app source (not development)
+
   block:
+
   - name: Pull latest data from project repo
     git: repo={{ app.repo }} dest={{ app.base }}/go/src/{{ app.import_path }} version={{ app.branch }}
     become_user: "{{ app.user }}"
+
   - name: Pull latest data from project web repo branch
     git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
     become_user: "{{ app.user }}"
     when: app.webrepo is defined
+
   when: deployment_environment_id != 'local_development'
 
 - include_role: name=app_config
+
 - include_role: name=build_app
+
+- include_role: name=webapp
+
+# That's all folks!
+- debug:
+    msg: "Local dev environment successfully updated."
+  when: deployment_environment_id == 'local_development'
+
+- debug:
+    msg: "{{ deployment_environment_id }} environment successfully updated."
+  when: deployment_environment_id != 'local_development'

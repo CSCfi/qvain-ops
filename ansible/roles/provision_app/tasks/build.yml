@@ -1,3 +1,4 @@
+
 # register real app home directory as a fact
 - user:
     name: "{{ app.user }}"
@@ -6,7 +7,6 @@
     app_user_home: "{{ app_user_info.home }}"
 
 - include_role: name=app_config
-
 
 - block:
 
@@ -42,27 +42,8 @@
   when: deployment_environment_id != 'local_development'
 
 
-# - name: checkpoint
-#   debug:
-#     msg: checkpoint
+# - include_role: name=webapp
 
-
-- block:
-
-  - name: Clone project web repo
-    git: repo={{ app.webrepo }} dest="{{ shared_frontend_folder_path }}" version={{ app.branch }}
-    become_user: "{{ app.user }}"
-    when: app.webrepo is defined
-
-  - name: Link shared qvain-js to {{ app.webpath }}
-    file: src="{{ shared_frontend_folder_path }}" dest={{ app.webpath }} state=link
-
-  when: deployment_environment_id == 'local_development'
-
-- name: Clone project web repo
-  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
-  become_user: "{{ app.user }}"
-  when: deployment_environment_id != 'local_development'
 
 - name: Check if we can find the schema in our source code repo
   stat:
@@ -86,15 +67,14 @@
     vars:
       homedir: "{{ app_user_info.home | default('/home/' + app.user) }}"
   - name: Enable app backend service
-    #systemd: name={{ app.name }}.service enabled=yes state=restarted daemon_reload=yes
     systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
   when: service_file.stat.exists
 
-# - name: Remove bench directory
-#   file:
-#     state: absent
-#     # path: /srv/qvain/go/src/github.com/NatLibFi/qvain-api/internal/bench
-#     path: "{{ shared_backend_folder_path }}/internal/bench"
+- name: Remove bench directory
+  file:
+    state: absent
+    path: "{{ app.source }}/internal/bench"
+  ignore_errors: yes
 
 - name: Import dependencies
   command: go get -v -d {{ app.import_path }}/...
@@ -113,11 +93,7 @@
 
 - include_role: name=build_app
 
-# That's all folks!
-- debug:
-    msg: "Local dev environment successfully set up."
-  when: deployment_environment_id == 'local_development'
-
-- debug:
-    msg: "{{ deployment_environment_id }} environment successfully set up."
-  when: deployment_environment_id != 'local_development'
+- name: Stash possible repo changes (due to removing bench directory)
+  command: git stash
+  args:
+    chdir: "{{ app.source }}"

@@ -1,8 +1,8 @@
 # register real app home directory as a fact
 
-# - name: checkpoint
-#   debug:
-#     msg: checkpoint
+- name: provision_app_checkpoint
+  debug:
+    msg: checkpoint
 
 # register real app home directory as a fact
 - user:
@@ -13,10 +13,10 @@
 
 - include_role: name=app_config
 
-#- include: copy_backend.yml
-
-- include_role: name=install_app
-  when: deployment_environment_id in ['test', 'stable']
+# not sure if this should really be executed for test and stable ?
+# same could be done with deploy role ?
+# - include_role: name=install_app
+#   when: deployment_environment_id in ['test', 'stable']
 
 - include: build.yml
 
@@ -31,20 +31,7 @@
     msg: "Uhoh! Database schema file not found in {{ app.source }}/{{ app.sqlschema }}"
   when: not sqlschema_file.stat.exists
 
-- local_action: stat path={{ role_path }}/templates/{{ app.name }}.service
-  become: no
-  register: service_file
-
-# install the systemd service file
-- block:
-  - name: Copy systemd service file
-    template: src=templates/{{ app.name }}.service dest=/etc/systemd/system/{{ app.name }}.service owner=root group=root mode=644
-    vars:
-      homedir: "{{ app_user_info.home | default('/home/' + app.user) }}"
-  - name: Enable app backend service
-    #systemd: name={{ app.name }}.service enabled=yes state=restarted daemon_reload=yes
-    systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
-  when: service_file.stat.exists
+- include_role: name=webapp
 
 # That's all folks!
 - debug:

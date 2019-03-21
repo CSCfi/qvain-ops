@@ -10,7 +10,6 @@
 /qvain-js/
 
 ansible/*.retry
-
 # ignore release tree
 /releases/
 
@@ -24,6 +23,8 @@ ansible/facts/
 # Ansible script related
 ansible/inventories/test/
 ansible/files/
+
+ansible/secrets/
 
 # Other
 *.pem
