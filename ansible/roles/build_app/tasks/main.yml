@@ -15,28 +15,6 @@
 #
 # WARNING: $PWD is not set correctly for the user; don't rely on it
 
-#### temporary tasks
-
-- name: Stash possible repo changes
-  command: git stash
-  args:
-    chdir: "{{ app.source }}"
-
-- name: TEMPORARY ---- Switch git branch to known working commit cb5a16a6ded8361dc5d2e5d057f92447bf0463bd
-  git: repo={{ app.repo }} dest="{{ app.source }}" version=cb5a16a6ded8361dc5d2e5d057f92447bf0463bd
-  become_user: "{{ app.user }}"
-
-- name: Unstash git repo
-  shell: git stash apply
-  args:
-    executable: /bin/bash
-    chdir: "{{ app.source }}"
-  become_user: "{{ app.user }}"
-
-
-#####
-
-
 - name: Build app
   command: make install
   args:
