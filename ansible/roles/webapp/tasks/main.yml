@@ -13,6 +13,12 @@
   - name: Link shared web repo to {{ app.webpath }}
     file: src="{{ shared_frontend_folder_path }}" dest={{ app.webpath }} state=link
 
+  - name: Create local .env file for the dev server
+    template:
+      src: "templates/.env.development.local"
+      dest: "{{ shared_frontend_folder_path }}/.env.development.local"
+      force: no
+
   when: deployment_environment_id == 'local_development'
 
 
