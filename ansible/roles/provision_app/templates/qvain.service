@@ -1,9 +1,9 @@
 [Unit]
 Description=Qvain backend service
 #ConditionPathExists={{ app.base }}/bin/qvain-backend
-After=postgresql.service
-Wants=postgresql.service
-#Requires=postgresql.service
+After=postgresql-9.6.service
+Wants=postgresql-9.6.service
+#Requires=postgresql-9.6.service
 
 [Service]
 WorkingDirectory={{ app.base }}
