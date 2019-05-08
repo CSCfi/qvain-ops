@@ -1,5 +1,6 @@
 # {{ app.name }} env file
 APP_DEBUG={{ 1 if deployment_environment_id != 'production' else 0 }}
+APP_DEV_MODE={{ 1 if deployment_environment_id == 'local_development' else 0 }}
 APP_HOSTNAME={{ server.fqdn }}
 APP_OIDC_PROVIDER_NAME={{ apis.oidc_provider_name }}
 APP_OIDC_PROVIDER_URL={{ apis.oidc_provider_url }}
@@ -15,4 +16,3 @@ PGUSER={{ database.user }}
 PGPASSWORD={{ database.password }}
 PGSSLMODE=disable
 PGAPPNAME={{ app.name }}
-TESTVAR=666
