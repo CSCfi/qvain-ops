@@ -26,7 +26,20 @@
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
   yum:
-    name: ['@Development tools', 'htop', 'git', 'zip', 'unzip', 'curl', 'vim', 'tcl', 'tree', 'zile', 'nano']
+    name: [
+      '@Development tools',
+      'htop',
+      'git',
+      'zip',
+      'unzip',
+      'curl',
+      'vim',
+      'tcl',
+      'tree',
+      'zile',
+      'nano',
+      'screen'
+    ]
     state: latest
   when: deployment_environment_id not in ['production']
 
@@ -111,17 +124,23 @@
 #       clean:
 #          journalctl --vacuum-time=1years
 - name: Switch systemd to persistent logging
+
   block:
+
   - name: Create persistent log directory for systemd
     file: path=/var/log/journal state=directory owner=root group=systemd-journal mode=2755
+
   - name: Run systemd-tmpfiles on journal log directory
     command: systemd-tmpfiles --create --prefix /var/log/journal
+
   - name: Reload systemd-journald
-    command: pkill -USR1 systemd-journald
+    service: name=systemd-journald state=restarted
     when: deployment_environment_id != 'production'
+
   - name: Reload systemd-journald (production)
     command: killall5 -USR1 systemd-journald
     when: deployment_environment_id == 'production'
+
   when: not journal_log.stat.exists and not deployment_environment_id == 'local_development'
 
 - include_role: name=users

@@ -9,7 +9,8 @@
 $script = <<SCRIPT
 if [ ! -f /vagrant_bootstrap_done.info ]; then
   sudo yum update
-  sudo yum -y install epel-release ansible git
+  sudo yum -y install epel-release
+  sudo yum -y install ansible git
   cd /qvain/ansible
   ansible-playbook site_provision.yml
   sudo touch /vagrant_bootstrap_done.info
@@ -33,7 +34,8 @@ Vagrant.configure("2") do |config|
         server.vm.synced_folder "./", "/qvain", :mount_options => ["dmode=777,fmode=777"]
     else
         # Basic VM synced folder mount
-        #server.vm.synced_folder "./qvain-api", "/qvain/qvain-api", :mount_options => ["dmode=755,fmode=644"], create: true
+        server.vm.synced_folder "./qvain-js", "/qvain/qvain-js", :mount_options => ["dmode=777,fmode=777"], create: true
+        server.vm.synced_folder "./qvain-api", "/qvain/qvain-api", :mount_options => ["dmode=777,fmode=777"], create: true
         server.vm.synced_folder "./ansible", "/qvain/ansible", :mount_options => ["dmode=775,fmode=775"]
     end
 
@@ -42,7 +44,7 @@ Vagrant.configure("2") do |config|
     server.vm.provider "virtualbox" do |vbox|
         vbox.name = "qvain_local_development"
         vbox.gui = false
-        vbox.memory = 4096
+        vbox.memory = 2046
         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
     end
   end

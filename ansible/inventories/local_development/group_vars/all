@@ -1,2 +1,96 @@
+
+# this block is a copy of secrets.yaml, so we dont have to separately include it on
+# the cmd line when in local dev env
+secrets:
+  # database password for `qvain` user in Postgresql
+  #
+  # create with:
+  #   DBUSER=qvain; DBPASS=fjkl0923sqpxk; echo -n md5; echo -n $DBPASS$DBUSER | md5sum | cut -d' ' -f1
+  # or see:
+  #   https://github.com/wvh/psqlpass
+  db:
+    password: fjkl0923sqpxk
+    hashed: md590bd8782ed7d5cdb4d1e8d9acccef7c9
+  # external apis
+  apis:
+    # 32 byte random key in hex for Qvain crypto
+    #
+    # generate with:
+    #   openssl rand -hex 32
+    token_key: 1e2e75f9f86eab4d48a167ffb91cef0da314dd31a07fe33e5a397b24ba2593f6
+    # user and pass for Qvain to use the Metax API; ask from Hannu
+    metax_api_user: qvain
+    metax_api_pass: ask_from_hannu
+    # id and secret for OpenID Connect in Fairdata authentication proxy; talk to AAI people
+    oidc_provider_name: fairdata
+    oidc_provider_url: secret
+    oidc_client_id: secret
+    oidc_client_secret: secret
+
+# ssh user for Ansible deployment; not needed for local development, where it's hardcoded to `vagrant`
+# ssh_user: cloud-user
+
+
+shared_folder_base_path: /qvain
+shared_backend_folder_path: "{{ shared_folder_base_path }}/qvain-api"
+shared_frontend_folder_path: "{{ shared_folder_base_path }}/qvain-js"
+repo_branch: next
+
 deployment_environment_id: local_development
-repo_branch: master
+server_certificate_name: selfsigned
+server_domain_name: qvain.csc.local
+
+server:
+  ip: 127.0.0.1
+  fqdn: qvain.csc.local
+  hostname: qvain-dev
+
+apis:
+  metax_api_hostname: metax.fairdata.fi
+  metax_api_user: "{{ secrets.apis.metax_api_user }}"
+  metax_api_pass: "{{ secrets.apis.metax_api_pass }}"
+  token_key: "{{ secrets.apis.token_key }}"
+  oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
+  oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
+  oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
+  oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
+
+
+qvain_database:
+  name: qvain_db
+  user: qvain_db_user
+  password: Rs9VJTsWjs2BqnF8
+
+redis:
+  instance_common:
+    master_host: '127.0.0.1'
+    master_port: 6379
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+    password: password
+
+  instance_1:
+    number: 1
+    port: 6379
+    listen_hosts: '127.0.0.1'
+
+  instance_2:
+    number: 2
+    port: 6380
+    listen_hosts: '127.0.0.1'
+
+  sentinel_common:
+    service_name: 'metax-master'
+    quorum: 2 # how many sentinels need to agree before switching master
+    listen_hosts: '127.0.0.1' # should be a list for other than local env
+
+  sentinel_1:
+    number: 1
+    port: 5000
+
+  sentinel_2:
+    number: 2
+    port: 5001
+
+  sentinel_3:
+    number: 3
+    port: 5002

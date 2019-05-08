@@ -1,0 +1,68 @@
+---
+
+- include_role: name=nodejs
+  when: deployment_environment_id != 'production'
+
+- block:
+
+  - name: Clone project web repo
+    git: repo={{ app.webrepo }} dest="{{ shared_frontend_folder_path }}" version={{ app.branch }}
+    become_user: "{{ app.user }}"
+    when: app.webrepo is defined
+
+  - name: Link shared web repo to {{ app.webpath }}
+    file: src="{{ shared_frontend_folder_path }}" dest={{ app.webpath }} state=link
+
+  - name: Create local .env file for the dev server
+    template:
+      src: "templates/.env.development.local"
+      dest: "{{ shared_frontend_folder_path }}/.env.development.local"
+      force: no
+
+  when: deployment_environment_id == 'local_development'
+
+
+- name: Clone project web repo
+  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
+  become_user: "{{ app.user }}"
+  when: deployment_environment_id != 'local_development'
+
+- name: Clean previous web app builds - dist
+  file:
+    state: absent
+    path: "{{ app.webpath }}/dist"
+
+- name: Clean previous web app builds - node_modules
+  file:
+    state: absent
+    path: "{{ app.webpath }}/node_modules"
+
+- name: Checking node version
+  shell: "source /home/{{ app.user}}/.bashrc; node --version"
+  args:
+    executable: /bin/bash
+  register: node_version_output
+  become_user: "{{ app.user }}"
+
+- name: Printing node version
+  debug:
+    msg: "{{ node_version_output.stdout }}"
+
+- name: Execute npm install
+  shell: "source /home/{{ app.user}}/.bashrc; npm install"
+  args:
+    executable: /bin/bash
+    chdir: "{{ app.webpath }}"
+  become_user: "{{ app.user }}"
+
+- name: Execute npm run build
+  shell: "source /home/{{ app.user}}/.bashrc; npm run build"
+  args:
+    executable: /bin/bash
+    chdir: "{{ app.webpath }}"
+  become_user: "{{ app.user }}"
+
+- name: Stash possible local repo changes due to building...
+  command: git stash
+  args:
+    chdir: "{{ app.webpath }}"

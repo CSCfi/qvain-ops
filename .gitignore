@@ -5,14 +5,16 @@
 # Ignore vagrant cache directory
 .vagrant/
 
-# ignore qvain-app because it is another git-repo
-/qvain-app/
+# ignore qvain-api because it is another git-repo
+/qvain-api/
+/qvain-js/
 
+ansible/*.retry
 # ignore release tree
 /releases/
 
 # ansible retry-file
-ansible/site.retry
+ansible/*.retry
 
 # ansible fact cache
 ansible/.cache/
@@ -21,6 +23,8 @@ ansible/facts/
 # Ansible script related
 ansible/inventories/test/
 ansible/files/
+
+ansible/secrets/
 
 # Other
 *.pem

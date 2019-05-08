@@ -14,6 +14,7 @@
 # INSTALL env var tells where the binaries get copied to if the build was successful.
 #
 # WARNING: $PWD is not set correctly for the user; don't rely on it
+
 - name: Build app
   command: make install
   args:

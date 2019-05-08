@@ -9,13 +9,11 @@
     - redis
     - certificates
     - nginx
-    - role: letsencrypt
-      when: deployment_environment_id in ['test', 'stable']
+    # - role: letsencrypt
+    #   when: deployment_environment_id in ['test', 'stable']
     - role: go
       when: deployment_environment_id not in ['production', 'builder']
     - role: provision_app
-    - role: app_config
-      when: deployment_environment_id in ['production', 'builder']
   handlers:
     - name: restart sshd
       service: name=sshd state=restarted
