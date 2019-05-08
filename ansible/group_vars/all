@@ -1,6 +1,6 @@
 app_base_path: /srv/qvain
 
-pg_base_path: "{{ app.base }}/db"
+pg_base_path: "/data/pg96/QVAIN_prod"
 pg_data_path: "{{ pg_base_path }}/data"
 pg_backup_path: "{{ pg_base_path }}/backup"
 pg_backup_archive_path: "{{ pg_backup_path }}/archive"
