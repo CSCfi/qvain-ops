@@ -6,6 +6,6 @@ pg_backup_path: "{{ pg_base_path }}/backup"
 pg_backup_archive_path: "{{ pg_backup_path }}/archive"
 pg_config_path: "{{ pg_base_path }}/config"
 
-go_version_at_least: "1.8"
+go_version_at_least: "1.11"
 go_default_gopath: "$HOME/go"
 go_default_gobin: "$HOME/bin"
