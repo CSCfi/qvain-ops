@@ -7,4 +7,4 @@
 - block:
     - include: copy_backend.yml
     - include: create_db_schema.yml
-  when: deployment_environment_id in ['test', 'stable']
+  when: deployment_environment_id in ['test', 'stable', 'production']
