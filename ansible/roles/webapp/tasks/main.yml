@@ -10,8 +10,8 @@
     become_user: "{{ app.user }}"
     when: app.webrepo is defined
 
-  - name: Link shared web repo to {{ app.webpath }}
-    file: src="{{ shared_frontend_folder_path }}" dest={{ app.webpath }} state=link
+  - name: Link shared web repo dist to {{ app.webpath }}/dist
+    file: src="{{ shared_frontend_folder_path }}/dist" dest={{ app.webpath }} state=link
 
   - name: Create local .env file for the dev server
     template:
