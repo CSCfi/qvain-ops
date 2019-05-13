@@ -1,6 +1,6 @@
 # qvain-ops
 
-This repository contains [Ansible](https://docs.ansible.com/ansible/) scripts to set up an instance of [Qvain](https://github.com/NatLibFi/qvain-api/).
+This repository contains [Ansible](https://docs.ansible.com/ansible/) scripts to set up an instance of [Qvain](https://github.com/CSCfi/qvain-api/).
 
 ## setting up a development environment
 
