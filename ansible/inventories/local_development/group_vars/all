@@ -18,9 +18,9 @@ secrets:
     # generate with:
     #   openssl rand -hex 32
     token_key: 1e2e75f9f86eab4d48a167ffb91cef0da314dd31a07fe33e5a397b24ba2593f6
-    # user and pass for Qvain to use the Metax API; ask from Hannu
+    # user and pass for Qvain to use the Metax API with local Metax instance.
     metax_api_user: qvain
-    metax_api_pass: ask_from_hannu
+    metax_api_pass: test-qvain
     # id and secret for OpenID Connect in Fairdata authentication proxy; talk to AAI people
     oidc_provider_name: fairdata
     oidc_provider_url: secret
@@ -46,7 +46,7 @@ server:
   hostname: qvain-dev
 
 apis:
-  metax_api_hostname: metax.fairdata.fi
+  metax_api_hostname: metax.csc.local
   metax_api_user: "{{ secrets.apis.metax_api_user }}"
   metax_api_pass: "{{ secrets.apis.metax_api_pass }}"
   token_key: "{{ secrets.apis.token_key }}"
