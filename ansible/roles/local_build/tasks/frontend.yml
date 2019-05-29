@@ -11,7 +11,7 @@
     force: true
 
 - name: Install front-end packages
-  shell: "cd; source .nvm/nvm.sh; cd {{root_path}}/qvain-js; npm install"
+  shell: "cd; source .nvm/nvm.sh; cd {{ root_path }}/qvain-js; npm install"
 
 - name: Build front-end
   shell: "cd; source .nvm/nvm.sh; cd {{ root_path }}/qvain-js; npm run {{ app.npm_build_command }}"

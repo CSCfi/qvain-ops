@@ -1,26 +1,21 @@
 ---
 
-- set_fact:
+- name: Set path variables
+  set_fact:
     root_path: "{{ playbook_dir | dirname }}"
     release_tree_path: "{{ playbook_dir | dirname }}/releases"
-    release_path: "{{ playbook_dir | dirname }}/releases/{{deployment_environment_id}}"
-
-- debug:
-    var: release_tree_path
-
-- debug:
-    var: release_path
+    release_path: "{{ playbook_dir | dirname }}/releases/{{ deployment_environment_id }}"
 
 - name: Create release directory
   file:
-    path: "{{release_path}}"
+    path: "{{ release_path }}"
     state: "directory"
 
-- name: Create release symlinks
-  block:
-    - file:
-        src: "{{root_path}}/{{item[0]}}"
-        dest: "{{release_path}}/{{item[1]}}"
+- block:
+    - name: Create release symlinks
+      file:
+        src: "{{ root_path }}/{{ item[0] }}"
+        dest: "{{ release_path }}/{{ item[1] }}"
         state: link
         force: yes
       with_list:
