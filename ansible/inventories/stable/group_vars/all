@@ -1,2 +1,3 @@
 deployment_environment_id: stable
 repo_branch: next
+npm_build_command: stable-build

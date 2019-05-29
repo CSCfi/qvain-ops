@@ -14,4 +14,4 @@
   shell: "cd; source .nvm/nvm.sh; cd {{root_path}}/qvain-js; npm install"
 
 - name: Build front-end
-  shell: "cd; source .nvm/nvm.sh; cd {{root_path}}/qvain-js; npm run build"
+  shell: "cd; source .nvm/nvm.sh; cd {{ root_path }}/qvain-js; npm run {{ app.npm_build_command }}"

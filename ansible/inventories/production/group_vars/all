@@ -1,2 +1,3 @@
 deployment_environment_id: production
 repo_branch: release
+npm_build_command: build
