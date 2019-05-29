@@ -1,7 +1,7 @@
 ---
 
-- import_tasks: go.yml # check go version
-- import_tasks: node.yml # install nvm to ensure our node version is recent enough
-- import_tasks: release.yml # make release symlinks to qvain-ops/releases/
-- import_tasks: backend.yml # build backend
+- import_tasks: go.yml       # check go version
+- import_tasks: node.yml     # install nvm to ensure our node version is recent enough
+- import_tasks: backend.yml  # build backend
 - import_tasks: frontend.yml # build frontend
+- import_tasks: release.yml  # create symlinks in qvain-ops/releases/[deployment_environment_id]

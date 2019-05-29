@@ -1,5 +1,13 @@
 ---
 
+# Clones and builds qvain-api and qvain-js locally.
+# Uses git with force so any local uncommitted
+# changes in qvain-api and qvain-js subdirs
+# are lost.
+#
+# Also creates the symlinks expected by deploy_appserver.yml
+# under qvain-ops/releases/[deployment_environment_id]
+
 - hosts: local_build
   connection: local
   roles:
