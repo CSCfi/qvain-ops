@@ -1,8 +1,5 @@
 ---
 
-- set_fact:
-    root_path: "{{ playbook_dir | dirname }}"
-
 - name: Pull latest data from back-end repo
   git:
     repo: "{{ app.repo }}"

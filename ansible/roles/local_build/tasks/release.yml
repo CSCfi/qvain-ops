@@ -1,11 +1,5 @@
 ---
 
-- name: Set path variables
-  set_fact:
-    root_path: "{{ playbook_dir | dirname }}"
-    release_tree_path: "{{ playbook_dir | dirname }}/releases"
-    release_path: "{{ playbook_dir | dirname }}/releases/{{ deployment_environment_id }}"
-
 - name: Create release directory
   file:
     path: "{{ release_path }}"

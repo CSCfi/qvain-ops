@@ -1,5 +1,11 @@
 ---
 
+- name: Set path variables
+  set_fact:
+    root_path: "{{ playbook_dir | dirname }}"
+    release_tree_path: "{{ playbook_dir | dirname }}/releases"
+    release_path: "{{ playbook_dir | dirname }}/releases/{{ deployment_environment_id }}"
+
 - import_tasks: go.yml       # check go version
 - import_tasks: node.yml     # install nvm to ensure our node version is recent enough
 - import_tasks: backend.yml  # build backend
