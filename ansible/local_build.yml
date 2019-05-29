@@ -1,0 +1,6 @@
+---
+
+- hosts: local_build
+  connection: local
+  roles:
+    - local_build

@@ -7,3 +7,5 @@ qvain-login-stable ansible_host="{{ server.ip }}" ansible_connection="ssh" ansib
 [test:children]
 appservers
 
+[local_build]
+localhost ansible_host=127.0.0.1 ansible_connection=local
