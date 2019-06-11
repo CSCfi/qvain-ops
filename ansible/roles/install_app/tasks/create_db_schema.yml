@@ -13,6 +13,6 @@
     - name: Set default search_path for database user to own schema
       command: psql -v ON_ERROR_STOP=1 -d {{ database.name }} -c 'ALTER ROLE {{ database.user }} SET search_path = "$user"'
     - name: Create database tables
-      command: psql -v ON_ERROR_STOP=1 -d {{ database.name }} -f {{ app.source }}/schema/schema.sql
+      command: psql -v ON_ERROR_STOP=1 -d {{ database.name }} -f {{ app.base }}/schema/schema.sql
   become_user: postgres
   when: create_schema.changed
