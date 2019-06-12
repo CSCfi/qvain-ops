@@ -18,6 +18,8 @@
 # - include_role: name=install_app
 #   when: deployment_environment_id in ['test', 'stable']
 
+- include: service.yml
+
 - block:
   - include: build.yml
 
