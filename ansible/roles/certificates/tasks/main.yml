@@ -7,10 +7,10 @@
     creates: /etc/pki/selfsigned/{{ server.hostname }}.crt
 
 - name: Make sure web cert directory exists
-  file: path=/etc/pki/web state=directory recurse=yes
+  file: path="{{ app.web_cert_path | dirname }}" state=directory recurse=yes
 
 - name: Create link to dummy self-signed key
-  file: src="/etc/pki/selfsigned/{{ server.hostname }}.key" dest="/etc/pki/web/{{ server.hostname }}.key" state=link
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.key" dest="{{ app.web_cert_path }}.key" state=link
 
 - name: Create link to dummy self-signed cert
-  file: src="/etc/pki/selfsigned/{{ server.hostname }}.crt" dest="/etc/pki/web/{{ server.hostname }}.crt" state=link
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.crt" dest="{{ app.web_cert_path }}.crt" state=link
