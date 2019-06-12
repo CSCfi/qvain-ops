@@ -2,7 +2,7 @@
   file: path=/etc/pki/selfsigned state=directory recurse=yes
 
 - name: Create dummy self-signed certificate
-  command: "openssl req -x509 -nodes -subj '/C=FI/ST=Uusimaa/L=Helsinki/O=National Library of Finland/CN={{ server.fqdn }}' -days 365 -newkey rsa:2048 -keyout /etc/pki/selfsigned/{{ server.hostname }}.key -out /etc/pki/selfsigned/{{ server.hostname }}.crt"
+  command: "openssl req -x509 -nodes -subj '/C=FI/ST=Uusimaa/L=Espoo/O=CSC - Tieteen tietotekniikan keskus Oy/CN={{ server.fqdn }}' -days 365 -newkey rsa:2048 -keyout /etc/pki/selfsigned/{{ server.hostname }}.key -out /etc/pki/selfsigned/{{ server.hostname }}.crt"
   args:
     creates: /etc/pki/selfsigned/{{ server.hostname }}.crt
 
