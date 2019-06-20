@@ -1,0 +1,11 @@
+---
+
+- name: Install nvm
+  shell: "cd; curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash"
+  args:
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+
+- name: Install latest node LTS version using nvm
+  shell: "cd; source .nvm/nvm.sh; nvm install --lts"
+  args:
+    executable: /bin/bash

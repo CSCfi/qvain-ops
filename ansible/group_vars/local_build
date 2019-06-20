@@ -1,0 +1,5 @@
+app:
+  repo: https://github.com/CSCfi/qvain-api
+  webrepo: https://github.com/CSCfi/qvain-js
+  branch: "{{ repo_branch }}"
+  npm_build_command: "{{ npm_build_command }}"
