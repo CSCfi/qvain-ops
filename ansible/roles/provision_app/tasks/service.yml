@@ -1,0 +1,15 @@
+---
+
+- local_action: stat path={{ role_path }}/templates/{{ app.name }}.service
+  become: no
+  register: service_file
+
+# install the systemd service file BEFORE the build process, which will try to restart the backend process
+- block:
+  - name: Copy systemd service file
+    template: src=templates/{{ app.name }}.service dest=/etc/systemd/system/{{ app.name }}.service owner=root group=root mode=644
+    vars:
+      homedir: "{{ app_user_info.home | default('/home/' + app.user) }}"
+  - name: Enable app backend service
+    systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
+  when: service_file.stat.exists
