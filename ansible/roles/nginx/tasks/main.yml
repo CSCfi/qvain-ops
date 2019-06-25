@@ -3,9 +3,17 @@
 - name: Install nginx web server
   yum: name=nginx state=latest
 
-- name: Copy nginx configuration file
-#  template: src=templates/{{app.name}}-nginx.conf dest=/etc/nginx/default.d/{{app.name}}.conf
-  template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf
+- name: Copy nginx configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: templates/nginx.conf, dest: /etc/nginx/nginx.conf }
+    - { src: templates/includes/api.conf, dest: /etc/nginx/qvain/api.conf }
+    - { src: templates/includes/normal.conf, dest: /etc/nginx/qvain/normal.conf }
+    - { src: templates/includes/normal-without-cache-control.conf, dest: /etc/nginx/qvain/normal-without-cache-control.conf }
+    - { src: templates/includes/nginx-cache-control.conf, dest: /etc/nginx/qvain/nginx-cache-control.conf }
+    - { src: templates/includes/nginx-secure-headers.conf, dest: /etc/nginx/qvain/nginx-secure-headers.conf }
   register: nginx_config
 
 #- name: Copy nginx configuration file for letsencrypt
