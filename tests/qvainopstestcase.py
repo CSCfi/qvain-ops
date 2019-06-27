@@ -17,6 +17,7 @@ import urllib3
 from tauhka.testcase import TauhkaTestCase
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from github import Github
+from github.GithubException import RateLimitExceededException
 import warnings
 
 class QvainOPSTestCase(TauhkaTestCase):
@@ -34,18 +35,30 @@ class QvainOPSTestCase(TauhkaTestCase):
             "/html/body/center[1]/h1"), "Frontend is not running"
 
     def get_git_version(self):
-        g = Github()
-        backend_repo = g.get_repo("CSCfi/qvain-api")
-        backend_hash = backend_repo.get_branch(branch="release").commit.sha
-        backend_tags = backend_repo.get_tags()
-        backend_tag = backend_tags[0].name
+        try:
+            username = os.environ.get("GITHUB_USERNAME", None)
+            password = os.environ.get("GITHUB_PASSWORD", None)
+            # You can generate token https://github.com/settings/tokens/new
+            access_token = os.environ.get("GITHUB_ACCESS_TOKEN", None)
+            if username and password:
+                g = Github(username, password)
+            elif access_token:
+                g = Github(access_token)
+            else:
+                g = Github()
+            backend_repo = g.get_repo("CSCfi/qvain-api")
+            backend_hash = backend_repo.get_branch(branch="release").commit.sha
+            backend_tags = backend_repo.get_tags()
+            backend_tag = backend_tags[0].name
 
-        frontend_repo = g.get_repo("CSCfi/qvain-js")
-        frontend_hash = frontend_repo.get_branch(branch="release").commit.sha
-        frontend_tags = backend_repo.get_tags()
-        frontend_tag = frontend_tags[0].name
+            frontend_repo = g.get_repo("CSCfi/qvain-js")
+            frontend_hash = frontend_repo.get_branch(branch="release").commit.sha
+            frontend_tags = backend_repo.get_tags()
+            frontend_tag = frontend_tags[0].name
 
-        return (frontend_hash, frontend_tag), (backend_hash, backend_tag)
+            return (frontend_hash, frontend_tag), (backend_hash, backend_tag)
+        except RateLimitExceededException:
+            return ("GITHUB_RATE_LIMIT",""),("","")
 
     def get_back_version(self):
         pool = urllib3.PoolManager()
