@@ -28,21 +28,23 @@ class QvainVersion(QvainOPSTestCase):
         ))
         print()
         print("=== Available @ Github ===")
-        print("Front:\t{commit_hash}".format(
-            commit_hash=git_version[0],
+        print("Front:\t{tag_name}\t{commit_hash}".format(
+            commit_hash=git_version[0][0],
+            tag_name=git_version[0][1],
         ))
-        print("Back:\t{commit_hash}".format(
-            commit_hash=git_version[1],
+        print("Back:\t{tag_name}\t{commit_hash}".format(
+            commit_hash=git_version[1][0],
+            tag_name=git_version[1][1],
         ))  
 
         print()
         print("=== Installed @ Server ===")
-        print("Front:\t{version} ({commit_hash})".format(
+        print("Front:\t{version}\t{commit_hash}".format(
             commit_hash=front_version[0],
             version=front_version[1]
         ))
 
-        print("Back:\t{version} ({commit_hash})".format(
+        print("Back:\t{version}\t{commit_hash}".format(
             commit_hash=back_version[0],
             version=back_version[1]
         ))        

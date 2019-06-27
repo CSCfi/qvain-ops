@@ -35,9 +35,17 @@ class QvainOPSTestCase(TauhkaTestCase):
 
     def get_git_version(self):
         g = Github()
-        frontend_version = g.get_repo("CSCfi/qvain-js").get_branch(branch="release").commit.sha
-        backend_version = g.get_repo("CSCfi/qvain-api").get_branch(branch="release").commit.sha
-        return (frontend_version, backend_version)
+        backend_repo = g.get_repo("CSCfi/qvain-api")
+        backend_hash = backend_repo.get_branch(branch="release").commit.sha
+        backend_tags = backend_repo.get_tags()
+        backend_tag = backend_tags[0].name
+
+        frontend_repo = g.get_repo("CSCfi/qvain-js")
+        frontend_hash = frontend_repo.get_branch(branch="release").commit.sha
+        frontend_tags = backend_repo.get_tags()
+        frontend_tag = frontend_tags[0].name
+
+        return (frontend_hash, frontend_tag), (backend_hash, backend_tag)
 
     def get_back_version(self):
         pool = urllib3.PoolManager()
