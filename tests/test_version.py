@@ -18,24 +18,37 @@ class QvainVersion(QvainOPSTestCase):
     def test_version(self):
         front_version = self.get_front_version()
         back_version = self.get_back_version()
-
-        print("Server: {address}".format(
+        git_version = self.get_git_version()
+        print()
+        print("Server:\t{address}".format(
             address=self.server
         ))
-        print("Time: {timestamp}".format(
+        print("Time:\t{timestamp}".format(
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ))
+        print()
+        print("=== Available @ Github ===")
+        print("Front:\t{commit_hash}".format(
+            commit_hash=git_version[0],
+        ))
+        print("Back:\t{commit_hash}".format(
+            commit_hash=git_version[1],
+        ))  
 
-        print("JS version: {version} ({commit_hash})".format(
+        print()
+        print("=== Installed @ Server ===")
+        print("Front:\t{version} ({commit_hash})".format(
             commit_hash=front_version[0],
             version=front_version[1]
         ))
 
-        print("API version: {version} ({commit_hash})".format(
+        print("Back:\t{version} ({commit_hash})".format(
             commit_hash=back_version[0],
             version=back_version[1]
         ))        
         assert front_version[1] == back_version[1], "Front and Back-end should be running the same version"
+        print()
+
 
     def end_test(self):
         pass

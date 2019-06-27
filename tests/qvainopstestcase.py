@@ -16,7 +16,7 @@ import json
 import urllib3
 from tauhka.testcase import TauhkaTestCase
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-
+from github import Github
 import warnings
 
 class QvainOPSTestCase(TauhkaTestCase):
@@ -32,6 +32,12 @@ class QvainOPSTestCase(TauhkaTestCase):
         # We do not have such xpath in our frontend
         assert self.elem_is_not_found_xpath(
             "/html/body/center[1]/h1"), "Frontend is not running"
+
+    def get_git_version(self):
+        g = Github()
+        frontend_version = g.get_repo("CSCfi/qvain-js").get_branch(branch="release").commit.sha
+        backend_version = g.get_repo("CSCfi/qvain-api").get_branch(branch="release").commit.sha
+        return (frontend_version, backend_version)
 
     def get_back_version(self):
         pool = urllib3.PoolManager()
