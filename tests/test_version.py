@@ -27,7 +27,7 @@ class QvainVersion(QvainOPSTestCase):
             timestamp=datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         ))
         print()
-        print("=== Available @ Github ===")
+        print("=== Available @ Github ({branch}) ===".format(branch=self.branch))
         print("Front:\t{tag_name}\t{commit_hash}".format(
             commit_hash=git_version[0][0],
             tag_name=git_version[0][1],

@@ -27,6 +27,7 @@ class QvainOPSTestCase(TauhkaTestCase):
             "TEST_ADDRESS",
             "https://qvain.fairdata.fi"
         )
+        self.branch = os.environ.get("GITHUB_BRANCH", "release")
          
     def is_frontend_running(self):
         # This is the xpath for default error page header in nginx
@@ -47,12 +48,12 @@ class QvainOPSTestCase(TauhkaTestCase):
             else:
                 g = Github()
             backend_repo = g.get_repo("CSCfi/qvain-api")
-            backend_hash = backend_repo.get_branch(branch="release").commit.sha
+            backend_hash = backend_repo.get_branch(branch=self.branch).commit.sha
             backend_tags = backend_repo.get_tags()
             backend_tag = backend_tags[0].name
 
             frontend_repo = g.get_repo("CSCfi/qvain-js")
-            frontend_hash = frontend_repo.get_branch(branch="release").commit.sha
+            frontend_hash = frontend_repo.get_branch(branch=self.branch).commit.sha
             frontend_tags = backend_repo.get_tags()
             frontend_tag = frontend_tags[0].name
 
