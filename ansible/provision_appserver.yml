@@ -7,7 +7,8 @@
     - postgres
     - backup
     - redis
-    - certificates
+    - role: certificates
+      when: app.create_dummy_cert
     - nginx
     # - role: letsencrypt
     #   when: deployment_environment_id in ['test', 'stable']

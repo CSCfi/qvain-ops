@@ -114,17 +114,18 @@
 - stat: path=/var/log/journal
   register: journal_log
 
-# -wvh- make persistent storage
-#       commands:
-#         mkdir /var/log/journal
-#         systemd-tmpfiles --create --prefix /var/log/journal
-#         systemctl restart systemd-journald
-#       permissions:
-#         drwxr-sr-x root:systemd-journal
-#       clean:
-#          journalctl --vacuum-time=1years
+# create persistent storage location for systemd journal
+#   commands:
+#     mkdir /var/log/journal
+#     systemd-tmpfiles --create --prefix /var/log/journal
+#     systemctl kill --kill-who=main -s USR1 systemd-journald
+#   permissions:
+#     drwxr-sr-x root:systemd-journal
+#   clean:
+#     journalctl --vacuum-time=1years
+#
+# see https://gist.github.com/JPvRiel/b7c185833da32631fa6ce65b40836887
 - name: Switch systemd to persistent logging
-
   block:
 
   - name: Create persistent log directory for systemd
@@ -133,14 +134,8 @@
   - name: Run systemd-tmpfiles on journal log directory
     command: systemd-tmpfiles --create --prefix /var/log/journal
 
-  - name: Reload systemd-journald
-    service: name=systemd-journald state=restarted
-    when: deployment_environment_id != 'production'
-
-  - name: Reload systemd-journald (production)
-    command: killall5 -USR1 systemd-journald
-    when: deployment_environment_id == 'production'
-
+  - name: Flush systemd-journald
+    command: systemctl kill --kill-who=main -s USR1 systemd-journald
   when: not journal_log.stat.exists and not deployment_environment_id == 'local_development'
 
 - include_role: name=users

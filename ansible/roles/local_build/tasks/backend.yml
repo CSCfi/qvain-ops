@@ -1,0 +1,13 @@
+---
+
+- name: Pull latest data from back-end repo
+  git:
+    repo: "{{ app.repo }}"
+    dest: "{{ root_path }}/qvain-api"
+    version: "{{ app.branch }}"
+    force: true
+
+- name: Build app
+  command: make
+  args:
+    chdir: "{{ root_path}}/qvain-api"

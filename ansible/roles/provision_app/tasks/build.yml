@@ -18,7 +18,7 @@
     block:
       - file: path={{ app.base }}/go state=directory owner={{ app.user }} group={{ app.user }} mode=0755
       - file: path={{ app.base }}/go/src/github.com state=directory owner={{ app.user }} group={{ app.user }} mode=0755
-      - file: path={{ app.base }}/go/src/github.com/NatLibFi state=directory owner={{ app.user }} group={{ app.user }} mode=0755
+      - file: path={{ app.base }}/go/src/github.com/CSCfi state=directory owner={{ app.user }} group={{ app.user }} mode=0755
       - file: src="{{ shared_backend_folder_path }}" dest={{ app.base }}/go/src/{{ app.import_path }} state=link owner={{ app.user }} group={{ app.user }}
       - file: src="{{ shared_backend_folder_path }}" dest={{ app.source }} state=link owner={{ app.user }} group={{ app.user }} mode=0755
     become_user: "{{ app.user }}"
@@ -55,20 +55,6 @@
 - fail:
     msg: "Uhoh! Database schema file not found in {{ app.source }}/{{ app.sqlschema }}"
   when: not sqlschema_file.stat.exists
-
-- local_action: stat path={{ role_path }}/templates/{{ app.name }}.service
-  become: no
-  register: service_file
-
-# install the systemd service file BEFORE the build process, which will try to restart the backend process
-- block:
-  - name: Copy systemd service file
-    template: src=templates/{{ app.name }}.service dest=/etc/systemd/system/{{ app.name }}.service owner=root group=root mode=644
-    vars:
-      homedir: "{{ app_user_info.home | default('/home/' + app.user) }}"
-  - name: Enable app backend service
-    systemd: name={{ app.name }}.service enabled=yes daemon_reload=yes
-  when: service_file.stat.exists
 
 - name: Remove bench directory
   file:

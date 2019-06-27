@@ -1,15 +1,24 @@
 ---
-
 - name: Install nginx web server
   yum: name=nginx state=latest
 
-- name: Copy nginx configuration file
-#  template: src=templates/{{app.name}}-nginx.conf dest=/etc/nginx/default.d/{{app.name}}.conf
-  template: src=templates/nginx.conf dest=/etc/nginx/nginx.conf
-  register: nginx_config
+- name: Ensure that /etc/nginx/qvain exists
+  file:
+    path: /etc/nginx/qvain
+    state: directory
 
-#- name: Copy nginx configuration file for letsencrypt
-#  template: src=templates/letsencrypt.conf dest=/etc/nginx/default.d/letsencrypt.conf
+- name: Copy nginx configuration files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: templates/nginx.conf, dest: /etc/nginx/nginx.conf }
+    - { src: templates/includes/api.conf, dest: /etc/nginx/qvain/api.conf }
+    - { src: templates/includes/normal.conf, dest: /etc/nginx/qvain/normal.conf }
+    - { src: templates/includes/normal-without-cache-control.conf, dest: /etc/nginx/qvain/normal-without-cache-control.conf }
+    - { src: templates/includes/nginx-cache-control.conf, dest: /etc/nginx/qvain/nginx-cache-control.conf }
+    - { src: templates/includes/nginx-secure-headers.conf, dest: /etc/nginx/qvain/nginx-secure-headers.conf }
+  register: nginx_config
 
 - name: Make sure static web directory exists
   file: path={{app.base}}/static state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes

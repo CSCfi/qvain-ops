@@ -7,7 +7,7 @@ This document is the _admin guide_, a short manual for administering Qvain.
 
 ## Architecture
 
-The application consists of a [frontend web application](https://github.com/NatLibFi/qvain-js) written in Javascript ([Vue](http://vuejs.org/)) and a [backend service](https://github.com/NatLibFi/qvain-api) written in [Go](http://golang.org/).
+The application consists of a [frontend web application](https://github.com/CSCfi/qvain-js) written in Javascript ([Vue](http://vuejs.org/)) and a [backend service](https://github.com/CSCfi/qvain-api) written in [Go](http://golang.org/).
 
 The most common setup would be a reverse proxy such as [nginx](nginx.org) serving both the frontend's static web pages and proxying anything under the URL `/api/` to the backend process – which is a web server itself.
 
@@ -161,7 +161,7 @@ You can get information on the backend version by checking the start-up line in 
 	"version": "0.0.1",
 	"tag": "5bc14fa-dev",
 	"hash": "5bc14fa",
-	"repo": "https://github.com/NatLibFi/qvain-api/tree/5bc14fa"
+	"repo": "https://github.com/CSCfi/qvain-api/tree/5bc14fa"
 }
 ```
 

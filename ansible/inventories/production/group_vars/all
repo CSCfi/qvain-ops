@@ -1,2 +1,4 @@
 deployment_environment_id: production
 repo_branch: release
+npm_build_command: build
+web_cert_path: /etc/pki/tls/certs/star.fairdata.fi/star_fairdata_fi

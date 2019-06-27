@@ -1,0 +1,18 @@
+---
+
+- name: Create release directory
+  file:
+    path: "{{ release_path }}"
+    state: "directory"
+
+- name: Create release symlinks
+  file:
+    src: "{{ root_path }}/{{ item[0] }}"
+    dest: "{{ release_path }}/{{ item[1] }}"
+    state: link
+    force: yes
+  with_list:
+    - ['qvain-api/bin', 'bin']
+    - ['qvain-api/doc', 'doc']
+    - ['qvain-api/schema', 'schema']
+    - ['qvain-js/dist', 'web']

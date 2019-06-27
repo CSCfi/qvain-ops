@@ -11,6 +11,8 @@ app:
   import_path: github.com/CSCfi/qvain-api
   webrepo: https://github.com/CSCfi/qvain-js
   branch: "{{ repo_branch }}"
+  web_cert_path: "{{ web_cert_path | default('/etc/pki/web/' + server.hostname) }}" # cert path without .crt/.key extension.
+  create_dummy_cert: "{{ false if web_cert_path is defined else true }}"
 
 # How to calculate the Go import_path if not set manually:
 #   convert (potential) scp-style URIs to ssh://, parse the URL, extract the hostname and path, and drop the (potential) .git extension
