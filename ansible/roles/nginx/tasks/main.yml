@@ -18,6 +18,7 @@
     - { src: templates/includes/normal-without-cache-control.conf, dest: /etc/nginx/qvain/normal-without-cache-control.conf }
     - { src: templates/includes/nginx-cache-control.conf, dest: /etc/nginx/qvain/nginx-cache-control.conf }
     - { src: templates/includes/nginx-secure-headers.conf, dest: /etc/nginx/qvain/nginx-secure-headers.conf }
+    - { src: templates/includes/nginx-robots-headers.conf, dest: /etc/nginx/qvain/nginx-robots-headers.conf }
   register: nginx_config
 
 - name: Make sure static web directory exists
