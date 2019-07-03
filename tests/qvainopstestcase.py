@@ -20,6 +20,7 @@ from github import Github
 from github.GithubException import RateLimitExceededException
 import warnings
 
+
 class QvainOPSTestCase(TauhkaTestCase):
     def __init__(self, methodName='runTest'):
         super().__init__(methodName)
@@ -28,7 +29,7 @@ class QvainOPSTestCase(TauhkaTestCase):
             "https://qvain.fairdata.fi"
         )
         self.branch = os.environ.get("GITHUB_BRANCH", "release")
-         
+
     def is_frontend_running(self):
         # This is the xpath for default error page header in nginx
         # We do not have such xpath in our frontend
@@ -59,7 +60,7 @@ class QvainOPSTestCase(TauhkaTestCase):
 
             return (frontend_hash, frontend_tag), (backend_hash, backend_tag)
         except RateLimitExceededException:
-            return ("GITHUB_RATE_LIMIT",""),("","")
+            return ("GITHUB_RATE_LIMIT", ""), ("", "")
 
     def get_back_version(self):
         pool = urllib3.PoolManager()
@@ -71,7 +72,7 @@ class QvainOPSTestCase(TauhkaTestCase):
             )
         ).data
         version_info = json.loads(version_raw)
-        return (version_info["hash"],version_info["version"])
+        return (version_info["hash"], version_info["version"])
 
     def get_front_version(self):
         self.open_url(
@@ -84,4 +85,3 @@ class QvainOPSTestCase(TauhkaTestCase):
         commit_hash = self.find_element_by_xpath('//*[@id="app-body"]/div/div/div/dl/dd[5]/code').text
         version = self.find_element_by_xpath('//*[@id="app-body"]/div/div/div/dl/dd[4]/code').text
         return (commit_hash, version)
-        

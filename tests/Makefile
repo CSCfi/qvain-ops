@@ -18,4 +18,5 @@ clean:
 	@rm -rf __pycache__
 
 check: venv chromedriver
+	@venv/bin/pycodestyle --show-source --show-pep8 .  --exclude=venv
 	@$(PYTHON_CMD) -m unittest discover

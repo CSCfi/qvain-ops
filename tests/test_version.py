@@ -14,6 +14,7 @@
 from qvainopstestcase import QvainOPSTestCase
 import datetime
 
+
 class QvainVersion(QvainOPSTestCase):
     def test_version(self):
         front_version = self.get_front_version()
@@ -35,7 +36,7 @@ class QvainVersion(QvainOPSTestCase):
         print("Back:\t{tag_name}\t{commit_hash}".format(
             commit_hash=git_version[1][0],
             tag_name=git_version[1][1],
-        ))  
+        ))
 
         print()
         print("=== Installed @ Server ===")
@@ -47,10 +48,9 @@ class QvainVersion(QvainOPSTestCase):
         print("Back:\t{version}\t{commit_hash}".format(
             commit_hash=back_version[0],
             version=back_version[1]
-        ))        
+        ))
         assert front_version[1] == back_version[1], "Front and Back-end should be running the same version"
         print()
-
 
     def end_test(self):
         pass
