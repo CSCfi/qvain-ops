@@ -1,4 +1,5 @@
 deployment_environment_id: stable
 repo_branch: next
 npm_build_command: stable-build
-web_cert_path: /etc/pki/web/qvain-stable
+web_cert_crt: /etc/pki/web/qvain-stable.crt
+web_cert_key: /etc/pki/web/qvain-stable.key
