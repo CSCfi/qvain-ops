@@ -1,3 +1,5 @@
 deployment_environment_id: test
 repo_branch: next
 npm_build_command: testing-build
+web_cert_crt: /etc/pki/web/qvain-test.crt
+web_cert_key: /etc/pki/web/qvain-test.key

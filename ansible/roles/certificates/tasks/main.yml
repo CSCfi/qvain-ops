@@ -6,11 +6,14 @@
   args:
     creates: /etc/pki/selfsigned/{{ server.hostname }}.crt
 
-- name: Make sure web cert directory exists
-  file: path="{{ app.web_cert_path | dirname }}" state=directory recurse=yes
+- name: Make sure web cert key directory exists
+  file: path="{{ app.web_cert_key | dirname }}" state=directory recurse=yes
+
+- name: Make sure web cert crt directory exists
+  file: path="{{ app.web_cert_crt | dirname }}" state=directory recurse=yes
 
 - name: Create link to dummy self-signed key
-  file: src="/etc/pki/selfsigned/{{ server.hostname }}.key" dest="{{ app.web_cert_path }}.key" state=link
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.key" dest="{{ app.web_cert_key }}" state=link
 
 - name: Create link to dummy self-signed cert
-  file: src="/etc/pki/selfsigned/{{ server.hostname }}.crt" dest="{{ app.web_cert_path }}.crt" state=link
+  file: src="/etc/pki/selfsigned/{{ server.hostname }}.crt" dest="{{ app.web_cert_crt }}" state=link
