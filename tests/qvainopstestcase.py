@@ -81,7 +81,7 @@ class QvainOPSTestCase(TauhkaTestCase):
             )
         )
         self.is_frontend_running()
-        self.wait_until_window_title("Qvain")
+        self.wait_until_window_title("Qvain - Research Dataset Metadata Tool")
         commit_hash = self.find_element_by_xpath('//*[@id="app-body"]/div/div/div/dl/dd[5]/code').text
         version = self.find_element_by_xpath('//*[@id="app-body"]/div/div/div/dl/dd[4]/code').text
         return (commit_hash, version)
