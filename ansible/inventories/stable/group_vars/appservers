@@ -16,4 +16,4 @@ apis:
   oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
   oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
   oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
-  oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
+  qvain_stats_api_key: "{{ secrets.apis.qvain_stats_api_key }}"
