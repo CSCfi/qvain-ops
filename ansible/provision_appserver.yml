@@ -8,7 +8,9 @@
     - backup
     - redis
     - role: certificates
-      when: app.create_dummy_cert
+      when:
+       - app.create_dummy_cert
+       - deployment_environment_id == 'local_development'
     - nginx
     # - role: letsencrypt
     #   when: deployment_environment_id in ['test', 'stable']
