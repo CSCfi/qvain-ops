@@ -11,5 +11,8 @@
 - hosts: local_build
   connection: local
   become: no
+  environment:
+    GOOS: linux
+    GOARCH: amd64
   roles:
     - local_build
