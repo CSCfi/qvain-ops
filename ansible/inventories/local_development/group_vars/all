@@ -27,6 +27,7 @@ secrets:
     oidc_client_id: secret
     oidc_client_secret: secret
     qvain_stats_api_key: dev
+    qvain_dataset_api_key: dev
 
 # ssh user for Ansible deployment; not needed for local development, where it's hardcoded to `vagrant`
 # ssh_user: cloud-user
