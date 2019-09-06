@@ -42,6 +42,8 @@
     repo: "{{ app.webrepo }}"
     dest: "{{ tmp_webapp.path }}"
     version: "{{ app.branch }}"
+    update: yes
+    force: yes
   become_user: "{{ app.user }}"
   when: app.webrepo is defined
 
