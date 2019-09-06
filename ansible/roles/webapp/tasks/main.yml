@@ -36,6 +36,12 @@
     tmp_webapp:
       path: "{{ shared_frontend_folder_path | default(app.webpath) }}"
 
+# Clean environment prior to build
+- name: Clean previous web app
+  file:
+    path: "{{ tmp_webapp.path }}"
+    state: absent
+
 # Source
 - name: Clone project web repo
   shell: |
