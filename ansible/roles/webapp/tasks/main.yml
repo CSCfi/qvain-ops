@@ -39,6 +39,7 @@
 # Source
 - name: Clone project web repo
   shell: |
+    set -e
     test -d "{{ tmp_webapp.path }}" || git clone {{ app.webrepo }} "{{ tmp_webapp.path }}"
     pushd "{{ tmp_webapp.path }}"
       git pull
@@ -72,6 +73,7 @@
 # Build
 - name: Build webapp
   shell: |
+    set -e
     source /home/{{ app.user}}/.bashrc
     npm install
     npm run build
