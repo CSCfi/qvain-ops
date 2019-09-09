@@ -27,7 +27,7 @@ secrets:
     oidc_client_id: secret
     oidc_client_secret: secret
     qvain_stats_api_key: dev
-    qvain_dataset_api_key: dev
+    qvain_lookup_api_key: dev
 
 # ssh user for Ansible deployment; not needed for local development, where it's hardcoded to `vagrant`
 # ssh_user: cloud-user
@@ -57,6 +57,7 @@ apis:
   oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
   oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
   qvain_stats_api_key: "{{ secrets.apis.qvain_stats_api_key }}"
+  qvain_lookup_api_key: "{{ secrets.apis.qvain_lookup_api_key }}"
 
 qvain_database:
   name: qvain_db
