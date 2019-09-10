@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [[ -z ${SECRETS} ]]; then
   SECRETS=@../../secrets-stable.yaml
