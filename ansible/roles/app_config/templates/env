@@ -11,6 +11,7 @@ APP_METAX_API_HOST={{ apis.metax_api_hostname }}
 APP_METAX_API_USER={{ apis.metax_api_user }}
 APP_METAX_API_PASS={{ apis.metax_api_pass }}
 APP_QVAIN_STATS_API_KEY={{ apis.qvain_stats_api_key }}
+APP_QVAIN_LOOKUP_API_KEY={{ apis.qvain_lookup_api_key }}
 PGHOST={{ database.host }}
 PGDATABASE={{ database.name }}
 PGUSER={{ database.user }}
