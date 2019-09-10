@@ -36,14 +36,23 @@
     tmp_webapp:
       path: "{{ shared_frontend_folder_path | default(app.webpath) }}"
 
+# Clean environment prior to build
+- name: Clean previous web app
+  file:
+    path: "{{ tmp_webapp.path }}"
+    state: absent
+
 # Source
 - name: Clone project web repo
-  git:
-    repo: "{{ app.webrepo }}"
-    dest: "{{ tmp_webapp.path }}"
-    version: "{{ app.branch }}"
-    update: yes
-    force: yes
+  shell: |
+    set -e
+    test -d "{{ tmp_webapp.path }}" || git clone {{ app.webrepo }} "{{ tmp_webapp.path }}"
+    pushd "{{ tmp_webapp.path }}"
+      git pull
+      git checkout {{ app.branch }}
+    popd
+  args:
+    executable: /bin/bash
   become_user: "{{ app.user }}"
   when: app.webrepo is defined
 
@@ -70,6 +79,7 @@
 # Build
 - name: Build webapp
   shell: |
+    set -e
     source /home/{{ app.user}}/.bashrc
     npm install
     npm run build
