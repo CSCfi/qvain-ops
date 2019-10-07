@@ -1,0 +1,11 @@
+[Unit]
+Description = Fairdata Qvain JS
+After=fairdata-qvain-api.service
+Wants=fairdata-qvain-api.service
+
+[Service]
+ExecStart = /opt/fairdata/qvain/start-fairdata-qvain-js.sh
+EnvironmentFile = /etc/environment
+
+[Install]
+WantedBy = multi-user.target

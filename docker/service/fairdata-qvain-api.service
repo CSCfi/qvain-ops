@@ -1,0 +1,11 @@
+[Unit]
+Description = Fairdata Qvain API
+After=postgresql-9.6.service,redis.service
+Wants=postgresql-9.6.service,redis.service
+
+[Service]
+ExecStart = /opt/fairdata/qvain/start-fairdata-qvain-api.sh
+EnvironmentFile = /etc/environment
+
+[Install]
+WantedBy = multi-user.target
