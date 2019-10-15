@@ -1,12 +1,12 @@
 version: "3.7"
 services:
   cscdevbase:
+    image: cscdevbase:1
     build:
       context: ./cscdevbase
       args:
         ssh_key: "${SSH_KEY}"
         rootpassword: "${ROOT_PASSWORD}"
-    image: cscdevbase:1
     privileged: true
     volumes:
       - type: bind

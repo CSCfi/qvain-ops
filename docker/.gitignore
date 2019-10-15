@@ -1,3 +1,4 @@
 env
 id_rsa.pub
 .vagrant
+.root-password

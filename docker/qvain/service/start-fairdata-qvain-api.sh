@@ -19,6 +19,9 @@ set -a; source /etc/environment; set +a
 # has the required databases and schemas.
 if [[ -f /code/do-first-time-init ]]; then
 
+    # lets wait for awhile to ensure that postgresql is up
+    nc postgres.csc.local 5432 -z -w 10
+
     # initialize the database with qvain api schema
     psql --file=/code/qvain-api/schema/schema.sql
 

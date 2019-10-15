@@ -14,7 +14,8 @@ NEW_PASSWORD:=$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head 
 
 up:
 	@test -f qvain/env || (cp qvain/env.template qvain/env && nano qvain/env)
-	@test -f id_rsa.pub || cp ~/.ssh/id_rsa.pub .
+	@test -f cscdevbase/id_rsa.pub || cp ~/.ssh/id_rsa.pub cscdevbase/
+	@test -f .root-password || echo $(NEW_PASSWORD) > .root-password
 	@ROOT_PASSWORD=$(NEW_PASSWORD) SSH_KEY=id_rsa.pub docker-compose up
 	-@ssh-keygen -R [localhost]:2222
 	@echo
@@ -31,6 +32,9 @@ up:
 clean:
 	docker-compose stop
 	docker-compose rm -f
+	rm -f .root-password
 	-docker image rm `docker image ls qvain -q`
 	ssh-keygen -R [localhost]:2222
 
+fix-space:
+	docker rm $(docker ps -qa)
