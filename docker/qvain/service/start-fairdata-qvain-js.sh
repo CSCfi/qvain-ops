@@ -9,6 +9,7 @@
 # All Rights Reserved.
 #########################################################
 set -e
+set -a && source /etc/environment && set +a
 
 pushd /code
     export PORT=8081

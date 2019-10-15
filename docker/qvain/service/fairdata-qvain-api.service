@@ -4,6 +4,8 @@ After=postgresql-9.6.service,redis.service
 Wants=postgresql-9.6.service,redis.service
 
 [Service]
+User=qvain
+Group=qvain
 ExecStart = /opt/fairdata/qvain/start-fairdata-qvain-api.sh
 EnvironmentFile = /etc/environment
 

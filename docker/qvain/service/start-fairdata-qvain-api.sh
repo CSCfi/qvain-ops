@@ -11,20 +11,16 @@
 # All Rights Reserved.
 #########################################################
 set -e
+set -a; source /etc/environment; set +a
 
 #########################################################
 # Do the first time start up related initializations and system
 # preparing which will take care that the database itself
 # has the required databases and schemas.
 if [[ -f /code/do-first-time-init ]]; then
-    # add user creation via environment variables which should be available.
-    su - postgres -c "psql -c \"create user ${PGUSER} password '${PGPASSWORD}'\""
-    
-    # create the database
-    su - postgres -c "createdb -O ${PGUSER} ${PGDATABASE}"
 
     # initialize the database with qvain api schema
-    su - postgres -c "psql -d ${PGDATABASE} --file=/code/qvain-api/schema/schema.sql"
+    psql --file=/code/qvain-api/schema/schema.sql
 
     # ensure that we wont run these after the first time
     rm -f /code/do-first-time-init

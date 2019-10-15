@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+  cscdevbase:
+    build:
+      context: ./cscdevbase
+      args:
+        ssh_key: "${SSH_KEY}"
+        rootpassword: "${ROOT_PASSWORD}"
+    image: cscdevbase:1
+    privileged: true
+    volumes:
+      - type: bind
+        source: /sys/fs/cgroup
+        target: /sys/fs/cgroup
+        read_only: true
+    cap_add:
+      - ALL
+
+
+  postgres.csc.local:
+    image: postgres:9
+    environment:
+      POSTGRES_USER: qvain
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: qvaindb
+      PGDATA: /data/pg96/QVAIN_prod
+
+  redis.csc.local:
+    image: redis
+
+# TODO
+#  metax.csc.local:
+#    image: metax
+  qvain.csc.local:
+    image: qvain:1
+    build:
+      context: ./qvain
+    privileged: true
+    depends_on:
+      - cscdevbase
+      - postgres.csc.local
+      - redis.csc.local
+    ports:
+      - "2222:22"
+      - "443:443"
+      - "8080:8080"
+      - "8081:8081"
+      - "80:80"
+    volumes:
+      - type: bind
+        source: /sys/fs/cgroup
+        target: /sys/fs/cgroup
+        read_only: true
+    cap_add:
+      - ALL

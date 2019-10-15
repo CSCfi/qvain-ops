@@ -13,9 +13,9 @@ SHELL:=/bin/bash
 NEW_PASSWORD:=$(shell cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
 up:
-	@test -f env || (cp env.template env && nano env)
+	@test -f qvain/env || (cp qvain/env.template qvain/env && nano qvain/env)
 	@test -f id_rsa.pub || cp ~/.ssh/id_rsa.pub .
-	@vagrant --ssh_key=id_rsa.pub --root_password=$(NEW_PASSWORD) up
+	@ROOT_PASSWORD=$(NEW_PASSWORD) SSH_KEY=id_rsa.pub docker-compose up
 	-@ssh-keygen -R [localhost]:2222
 	@echo
 	@echo "You can login with root:$(NEW_PASSWORD) with:"
@@ -29,7 +29,8 @@ up:
 	@echo
 
 clean:
-	vagrant destroy -f
-	vagrant global-status --prune
-	docker image prune -a -f
+	docker-compose stop
+	docker-compose rm -f
+	-docker image rm `docker image ls qvain -q`
+	ssh-keygen -R [localhost]:2222
 

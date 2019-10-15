@@ -4,6 +4,8 @@ After=fairdata-qvain-api.service
 Wants=fairdata-qvain-api.service
 
 [Service]
+User=qvain
+Group=qvain
 ExecStart = /opt/fairdata/qvain/start-fairdata-qvain-js.sh
 EnvironmentFile = /etc/environment
 
