@@ -11,6 +11,6 @@
     executable: /bin/bash
 
 - name: Use nodeJS 10.x series
-  shell: "cd; source .bashrc; nvm use 10"
+  shell: "cd; source .nvm/nvm.sh; nvm use 10"
   args:
     executable: /bin/bash
