@@ -14,3 +14,9 @@
   become_user: "{{ app.user }}"
   args:
     executable: /bin/bash
+
+- name: Use nodeJS 10.x series
+  shell: "cd; source .bashrc; nvm use 10"
+  become_user: "{{ app.user }}"
+  args:
+    executable: /bin/bash
