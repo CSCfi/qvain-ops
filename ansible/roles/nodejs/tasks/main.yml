@@ -9,8 +9,8 @@
   args:
     creates: "/home/{{ app.user }}/.nvm/nvm.sh"
 
-- name: Install latest node LTS version using nvm
-  shell: "cd; source .bashrc; nvm install --lts"
+- name: Install latest node 10.x LTS version using nvm
+  shell: "cd; source .bashrc; nvm install --lts=dubnium"
   become_user: "{{ app.user }}"
   args:
     executable: /bin/bash
