@@ -16,7 +16,7 @@
     executable: /bin/bash
 
 - name: Use nodeJS 10.x series
-  shell: "cd; source .bashrc; nvm use 10"
+  shell: "cd; source .bashrc; nvm alias default lts/dubnium"
   become_user: "{{ app.user }}"
   args:
     executable: /bin/bash
