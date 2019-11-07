@@ -25,7 +25,7 @@
 
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
-  shell: yum install -y '@Development tools' htop git zip unzip curl vim tcl tree zile nano screen
+  shell: yum install -y libselinux-python '@Development tools' htop git zip unzip curl vim tcl tree zile nano screen
   when: deployment_environment_id not in ['production']
 
 - name: Disable SELinux (A better approach should be come up with!)
