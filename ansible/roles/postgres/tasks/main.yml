@@ -14,7 +14,7 @@
   ignore_errors: yes
 
 - name: Install PostgreSQL 9 and python psycopg2
-  shell: yum install -y postgresql96 postgresql96-server postgresql96-contrib python-psycopg2
+  shell: yum install -y postgresql96 postgresql96-server postgresql96-contrib python-psycopg2==2.7.7
 
 - name: Create database data directory
   file: path={{ item }} state=directory owner=postgres group=postgres mode=700
