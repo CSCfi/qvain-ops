@@ -25,16 +25,11 @@
 
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
-  shell: yum install -y libselinux-python '@Development tools' htop git zip unzip curl vim tcl tree zile nano screen
+  shell: yum install -y '@Development tools' htop git zip unzip curl vim tcl tree zile nano screen
   when: deployment_environment_id not in ['production']
 
-- name: Ensure selinux python module
-  shell: pip3 install selinux
-  when: deployment_environment_id not in ['production']
-
-
-- name: Disable SELinux (A better approach should be come up with!)
-  selinux: state=permissive policy=targeted
+#- name: Disable SELinux (A better approach should be come up with!)
+#  selinux: state=permissive policy=targeted
 
 # It seems at least in local dev centos 7 the fi_FI locale is already present!
 # Make sure it is so also in other envs!
