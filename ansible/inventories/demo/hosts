@@ -1,5 +1,5 @@
 [appservers]
-qvain-demo ansible_host=86.50.252.126 ansible_python_interpreter=/usr/bin/python2 ansible_connection=ssh ansible_user="{{ ssh_user }}"
+qvain-demo ansible_host=86.50.252.126 ansible_python_interpreter=/usr/bin/python3 ansible_connection=ssh ansible_user="{{ ssh_user }}"
 
 [test:children]
 appservers
