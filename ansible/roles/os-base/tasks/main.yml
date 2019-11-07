@@ -26,7 +26,7 @@
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
   shell: |
-    yum install
+    yum install -y 
       '@Development tools'
       'htop'
       'git'
