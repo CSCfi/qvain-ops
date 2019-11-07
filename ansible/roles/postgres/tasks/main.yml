@@ -9,13 +9,11 @@
 #    state: present
 
 - name: Install Postgresql yum repository package
-  dnf: name=https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm state=present
+  shell: yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
   when: deployment_environment_id not in ['production']
 
 - name: Install PostgreSQL 9 and python psycopg2
-  dnf:
-    name: ['postgresql96', 'postgresql96-server', 'postgresql96-contrib', 'python-psycopg2']
-    state: present
+  shell: yum install -y postgresql96 postgresql96-server postgresql96-contrib python-psycopg2
 
 - name: Create database data directory
   file: path={{ item }} state=directory owner=postgres group=postgres mode=700

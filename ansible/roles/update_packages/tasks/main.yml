@@ -1,6 +1,3 @@
 ---
 - name: Update yum cache and upgrade all packages
-  dnf:
-    name: '*'
-    state: latest
-    update_cache: yes
+  shell: yum update -y && yum upgrade -y

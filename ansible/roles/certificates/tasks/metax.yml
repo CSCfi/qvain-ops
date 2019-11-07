@@ -12,7 +12,7 @@
 - block:
 
     - name: Install dos2unix
-      dnf: name=dos2unix state=latest
+      shell: yum install dos2unix -y
 
     - name: Copy CA-signed primary certificate and private key
       copy: src=files/certificates/{{ item }} dest=/etc/nginx/ssl_certs/{{ item }} owner=root group=root mode=0644
