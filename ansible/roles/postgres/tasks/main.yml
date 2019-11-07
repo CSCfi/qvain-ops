@@ -11,6 +11,7 @@
 - name: Install Postgresql yum repository package
   shell: yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
   when: deployment_environment_id not in ['production']
+  ignore_errors: yes
 
 - name: Install PostgreSQL 9 and python psycopg2
   shell: yum install -y postgresql96 postgresql96-server postgresql96-contrib python-psycopg2
