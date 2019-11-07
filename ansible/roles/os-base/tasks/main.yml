@@ -28,6 +28,11 @@
   shell: yum install -y libselinux-python '@Development tools' htop git zip unzip curl vim tcl tree zile nano screen
   when: deployment_environment_id not in ['production']
 
+- name: Ensure selinux python module
+  shell: pip3 install selinux
+  when: deployment_environment_id not in ['production']
+
+
 - name: Disable SELinux (A better approach should be come up with!)
   selinux: state=permissive policy=targeted
 
