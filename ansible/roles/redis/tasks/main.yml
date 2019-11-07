@@ -39,7 +39,7 @@
       when: ansible_virtualization_type != "systemd-nspawn"
 
     - name: Install Redis server
-      yum: name=redis state=latest
+      dnf: name=redis state=latest
 
     - name: Copy Redis configuration to its place
       copy: src=redis.conf dest=/etc/redis.conf owner=redis group=root mode=644

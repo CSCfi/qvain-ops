@@ -25,7 +25,7 @@
 
 # -wvh- removed ntp; use systemd
 - name: Ensure os common packages
-  yum:
+  dnf:
     name: [
       '@Development tools',
       'htop',

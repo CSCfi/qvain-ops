@@ -1,7 +1,7 @@
 ---
 
 - name: Install go
-  yum: name=golang state=latest
+  dnf: name=golang state=latest
   
 - name: Get go version
   command: go version

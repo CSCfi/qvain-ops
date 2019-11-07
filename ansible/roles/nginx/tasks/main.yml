@@ -1,6 +1,6 @@
 ---
 - name: Install nginx web server
-  yum: name=nginx state=latest
+  dnf: name=nginx state=latest
 
 - name: Ensure that /etc/nginx/qvain exists
   file:
