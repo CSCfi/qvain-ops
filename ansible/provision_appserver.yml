@@ -15,7 +15,7 @@
     # - role: letsencrypt
     #   when: deployment_environment_id in ['test', 'stable']
     - role: go
-      when: deployment_environment_id not in ['production', 'builder']
+      when: deployment_environment_id not in ['production', 'builder', 'demo']
     - role: provision_app
   handlers:
     - name: restart sshd

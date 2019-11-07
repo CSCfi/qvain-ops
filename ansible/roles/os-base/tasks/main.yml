@@ -41,7 +41,7 @@
       'screen'
     ]
     state: latest
-  when: deployment_environment_id not in ['production']
+  when: deployment_environment_id not in ['production', 'demo']
 
 - name: Disable SELinux (A better approach should be come up with!)
   selinux: state=permissive policy=targeted

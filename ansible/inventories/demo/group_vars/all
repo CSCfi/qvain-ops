@@ -1,0 +1,5 @@
+deployment_environment_id: demo
+repo_branch: release
+npm_build_command: build
+web_cert_crt: /etc/pki/tls/certs/star.fairdata.fi/star_fairdata_fi.pem
+web_cert_key: /etc/pki/tls/certs/star.fairdata.fi/star_fairdata_fi.key

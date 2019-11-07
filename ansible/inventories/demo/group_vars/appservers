@@ -1,0 +1,20 @@
+### Configures server and API keys per environment.
+server:
+  ip: 127.0.0.1
+  fqdn: qvain-demo.fairdata.fi
+  hostname: qvain
+
+apis:
+  metax_api_hostname: metax-demo.fairdata.fi
+  metax_api_user: "{{ secrets.apis.metax_api_user }}"
+  metax_api_pass: "{{ secrets.apis.metax_api_pass }}"
+  token_key: "{{ secrets.apis.token_key }}"
+  oidc_client_id: "{{ secrets.apis.oidc_client_id }}"
+  oidc_client_secret: "{{ secrets.apis.oidc_client_secret }}"
+  oidc_provider_name: "{{ secrets.apis.oidc_provider_name }}"
+  oidc_provider_url: "{{ secrets.apis.oidc_provider_url }}"
+  qvain_stats_api_key: "{{ secrets.apis.qvain_stats_api_key }}"
+  qvain_lookup_api_key: "{{ secrets.apis.qvain_lookup_api_key }}"
+
+#pg_base_path: ""
+#app_base_path: ""

@@ -1,5 +1,5 @@
 # {{ app.name }} env file
-APP_DEBUG={{ 1 if deployment_environment_id != 'production' else 0 }}
+APP_DEBUG={{ 1 if deployment_environment_id not in ['production', 'demo'] else 0 }}
 APP_DEV_MODE={{ 1 if (deployment_environment_id == 'local_development' or deployment_environment_id == 'test') else 0 }}
 APP_HOSTNAME={{ server.fqdn }}
 APP_OIDC_PROVIDER_NAME={{ apis.oidc_provider_name }}

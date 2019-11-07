@@ -15,7 +15,7 @@
 
 - include_role:
     name: nodejs
-  when: deployment_environment_id != 'production'
+  when: deployment_environment_id not in ['production', 'demo']
 
 # System info
 - name: Checking node version

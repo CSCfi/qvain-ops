@@ -35,7 +35,7 @@
     when: not sqlschema_file.stat.exists
 
   - include_role: name=webapp
-  when: deployment_environment_id != 'production'
+  when: deployment_environment_id not in ['production', 'demo']
 
 # That's all folks!
 - debug:
