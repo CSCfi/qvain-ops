@@ -11,9 +11,9 @@
       when:
        - app.create_dummy_cert
        - deployment_environment_id == 'local_development'
+    - role: letsencrypt
+      when: deployment_environment_id in ['test', 'stable', 'demo']
     - nginx
-    # - role: letsencrypt
-    #   when: deployment_environment_id in ['test', 'stable']
     - role: go
       when: deployment_environment_id not in ['production', 'builder', 'demo']
     - role: provision_app
