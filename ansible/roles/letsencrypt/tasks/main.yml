@@ -51,16 +51,10 @@
 #  file: path=/etc/pki/web state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
 
 - name: Create link to letsencrypt key
-  file:
-    src: "/etc/letsencrypt/archive/{{ server.fqdn }}/privkey1.pem"
-    dest: "/etc/pki/web/{{ server.hostname }}.key"
-    state: link
+  file: src="/etc/letsencrypt/live/{{ server.fqdn }}/privkey.pem" dest="/etc/pki/web/{{ server.hostname }}.key" state=link
 
 - name: Create link to letsencrypt cert
-  file:
-    src: "/etc/letsencrypt/archive/{{ server.fqdn }}/fullchain1.pem"
-    dest: "/etc/pki/web/{{ server.hostname }}.crt"
-    state: link
+  file: src="/etc/letsencrypt/live/{{ server.fqdn }}/fullchain.pem" dest="/etc/pki/web/{{ server.hostname }}.crt" state=link
 
 # letsencrypt layout:
 # /etc/letsencrypt/live/{{ app.name }}.example.com/
