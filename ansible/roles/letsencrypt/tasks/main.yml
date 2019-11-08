@@ -3,6 +3,9 @@
 #  import_tasks: letsencrypt.yml
 #  #when: ansible_os_platform|lower == 'redhat'
 
+- name: Ensure that nginx web server is installed
+  shell: yum install -y nginx
+
 - name: Make sure letsencrypt web directory exists
   file: path={{app.base}}/letsencrypt state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
 
@@ -10,9 +13,9 @@
   template: src=templates/letsencrypt.conf dest=/etc/nginx/default.d/letsencrypt.conf
   register: letsencrypt_config
 
-#- name: (Re)start nginx service
-#  service: name=nginx state=restarted enabled=yes
-#  when: letsencrypt_config.changed
+- name: (Re)start nginx service
+  service: name=nginx state=restarted enabled=yes
+  when: letsencrypt_config.changed
 
 - name: Install letsencrypt certbot
   shell: yum install -y certbot certbot-nginx
