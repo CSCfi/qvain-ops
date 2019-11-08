@@ -1,61 +1,82 @@
-- name: Install letsencrypt certbot
-  yum: name=certbot,certbot-nginx state=present
+- name: Preconditions
+  block:
+    - stat:
+        path: /etc/pki/letsencrypt/{{server.hostname}}.key
+      register: letsencrypt_host_key
+    - stat:
+        path: /etc/pki/letsencrypt/{{server.hostname}}.csr
+      register: letsencrypt_host_csr
+    - stat:
+        path: /etc/pki/letsencrypt/{{server.hostname}}.crt
+      register: letsencrypt_host_crt
+    - debug:
+        msg:
+          - "Lets Encrypt SSL files exists:"
+          - "key: {{ letsencrypt_host_key.stat.exists }}"
+          - "csr: {{ letsencrypt_host_csr.stat.exists }}"
+          - "crt: {{ letsencrypt_host_crt.stat.exists }}"
 
-- name: Make sure letsencrypt private key directory exists
-  file: path=/etc/pki/letsencrypt state=directory mode=0700
+- name: "Setup letsencrypt"
+  when: letsencrypt_host_crt.stat.exists == False
+  block:
+    - name: Install letsencrypt certbot
+      yum: name=certbot,certbot-nginx state=present
 
-- name: Create RSA private key for letsencrypt account
-  command: openssl genrsa -out "/etc/pki/letsencrypt/account.key" 2048
-  args:
-    creates: "/etc/pki/letsencrypt/account.key"
+    - name: Make sure letsencrypt private key directory exists
+      file: path=/etc/pki/letsencrypt state=directory mode=0700
 
-- name: Create RSA private key for letsencrypt host
-  command: openssl genrsa -out "/etc/pki/letsencrypt/{{server.hostname}}.key" 2048
-  args:
-    creates: "/etc/pki/letsencrypt/{{server.hostname}}.key"
+    - name: Create RSA private key for letsencrypt account
+      command: openssl genrsa -out "/etc/pki/letsencrypt/account.key" 2048
+      args:
+        creates: "/etc/pki/letsencrypt/account.key"
 
-- name: Generate CSR for letsencrypt host
-  command: openssl req \
-    -new \
-    -subj '/C=FI/ST=Uusimaa/L=Helsinki/O=National Library of Finland/CN={{server.fqdn}}' \
-    -key "/etc/pki/letsencrypt/{{server.hostname}}.key" \
-    -out "/etc/pki/letsencrypt/{{server.hostname}}.csr"
-  args:
-    creates: "/etc/pki/letsencrypt/{{server.hostname}}.csr"
+    - name: Create RSA private key for letsencrypt host
+      command: openssl genrsa -out "/etc/pki/letsencrypt/{{server.hostname}}.key" 2048
+      args:
+        creates: "/etc/pki/letsencrypt/{{server.hostname}}.key"
 
-- name: get letsencrypt challenge
-  letsencrypt:
-    acme_directory: https://acme-v01.api.letsencrypt.org/directory
-    account_key: /etc/pki/letsencrypt/account.key
-    csr: /etc/pki/letsencrypt/{{server.hostname}}.csr
-    #dest: /etc/httpd/ssl/{{server.hostname}}.crt
-    dest: /etc/pki/letsencrypt/{{server.hostname}}.crt
-  register: letsencrypt_challenge
+    - name: Generate CSR for letsencrypt host
+      command: openssl req \
+        -new \
+        -subj '/C=FI/ST=Uusimaa/L=Espoo/O=CSC - Tieteen tietotekniikan keskus Oy/CN={{server.fqdn}}' \
+        -key "/etc/pki/letsencrypt/{{server.hostname}}.key" \
+        -out "/etc/pki/letsencrypt/{{server.hostname}}.csr"
+      args:
+        creates: "/etc/pki/letsencrypt/{{server.hostname}}.csr"
 
-# 'resource' looks like: .well-known/acme-challenge/<abc>
-- name: Make sure acme challenge directory exists
-  file: path={{app.base}}/letsencrypt/.well-known/acme-challenge state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
+    - name: get letsencrypt challenge
+      letsencrypt:
+        acme_directory: https://acme-v01.api.letsencrypt.org/directory
+        account_key: /etc/pki/letsencrypt/account.key
+        csr: /etc/pki/letsencrypt/{{server.hostname}}.csr
+        #dest: /etc/httpd/ssl/{{server.hostname}}.crt
+        dest: /etc/pki/letsencrypt/{{server.hostname}}.crt
+      register: letsencrypt_challenge
 
-- name: Copy acme challenge to letsencrypt web root
-  copy:
-    dest: "{{ app.base }}/letsencrypt/{{ letsencrypt_challenge['challenge_data'][server.fqdn]['http-01']['resource'] }}"
-    content: "{{ letsencrypt_challenge['challenge_data'][server.fqdn]['http-01']['resource_value'] }}"
-  when: letsencrypt_challenge is changed
+    # 'resource' looks like: .well-known/acme-challenge/<abc>
+    - name: Make sure acme challenge directory exists
+      file: path={{app.base}}/letsencrypt/.well-known/acme-challenge state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
 
-- name: Perform letsencrypt acme challenge
-  letsencrypt:
-    acme_directory: https://acme-v01.api.letsencrypt.org/directory
-    account_key: /etc/pki/letsencrypt/account.key
-    csr: /etc/pki/letsencrypt/{{server.hostname}}.csr
-    #dest: /etc/httpd/ssl/{{server.hostname}}.crt
-    dest: /etc/pki/letsencrypt/{{server.hostname}}.crt
-    data: "{{ letsencrypt_challenge }}"
+    - name: Copy acme challenge to letsencrypt web root
+      copy:
+        dest: "{{ app.base }}/letsencrypt/{{ letsencrypt_challenge['challenge_data'][server.fqdn]['http-01']['resource'] }}"
+        content: "{{ letsencrypt_challenge['challenge_data'][server.fqdn]['http-01']['resource_value'] }}"
+      when: letsencrypt_challenge is changed
 
-- name: Link to letsencrypt certificate
-  file:
-    src: "/etc/pki/letsencrypt"
-    dest: "/etc/pki/web"
-    state: link
+    - name: Perform letsencrypt acme challenge
+      letsencrypt:
+        acme_directory: https://acme-v01.api.letsencrypt.org/directory
+        account_key: /etc/pki/letsencrypt/account.key
+        csr: /etc/pki/letsencrypt/{{server.hostname}}.csr
+        #dest: /etc/httpd/ssl/{{server.hostname}}.crt
+        dest: /etc/pki/letsencrypt/{{server.hostname}}.crt
+        data: "{{ letsencrypt_challenge }}"
 
-- name: Restart nginx to use letsencrypt certificate
-  service: name=nginx state=restarted enabled=yes
+    - name: Link to letsencrypt certificate
+      file:
+        src: "/etc/pki/letsencrypt"
+        dest: "/etc/pki/web"
+        state: link
+
+    - name: Restart nginx to use letsencrypt certificate
+      service: name=nginx state=restarted enabled=yes
