@@ -6,6 +6,12 @@
 - name: Ensure that nginx web server is installed
   shell: yum install -y nginx
 
+- name: Ensure that nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
 - name: Make sure letsencrypt web directory exists
   file: path={{app.base}}/letsencrypt state=directory mode=0775 owner={{app.user}} group={{app.user}} recurse=yes
 
