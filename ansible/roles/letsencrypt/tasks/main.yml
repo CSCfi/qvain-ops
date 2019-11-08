@@ -15,7 +15,7 @@
 #  when: letsencrypt_config.changed
 
 - name: Install letsencrypt certbot
-  yum: name=certbot,certbot-nginx state=present
+  shell: yum install -y certbot certbot-nginx
 
 - name: Run letsencrypt certbot
   command: certbot -n certonly --agree-tos --email {{ app.user }}@{{ server.fqdn }} --webroot -w {{ app.base }}/letsencrypt -d {{ server.fqdn }}
