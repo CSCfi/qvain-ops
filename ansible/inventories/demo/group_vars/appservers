@@ -1,6 +1,6 @@
 ### Configures server and API keys per environment.
 server:
-  ip: 127.0.0.1
+  ip: 86.50.252.126
   fqdn: qvain-demo.fairdata.fi
   hostname: qvain-demo
 
