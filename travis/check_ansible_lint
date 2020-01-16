@@ -1,0 +1,19 @@
+#!/bin/bash
+#################################################################
+# This is a script which will run ansible syntax checks
+#
+# Author(s):
+#    Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+#
+# License: MIT
+#
+# Copyright (C) 2020 CSC - IT Center for Science Ltd.
+# All Rights Reserved.
+#################################################################
+
+pushd ansible
+    echo "Running ansible-lint"
+    ansible-lint local_build.yml
+    ansible-lint site_provision.yml
+    ansible-lint site_deploy.yml
+popd
