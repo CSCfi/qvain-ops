@@ -1,44 +1,27 @@
 ---
+###############################################
+# This role builds the Qvain frontend code.
+#
+# Authors:
+#    Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+#    Hannu Kamarainen <hannu.kamarainen@csc.fi>
+#    Jori Niemi <3295718+tahme@users.noreply.github.com>
+#
+# License: MIT
+#
+# (C) Copyright 2019 Ministry of Education and Culture, Finland.
+# All Rights Reserved.
+###############################################
 
-- include_role: name=nodejs
+- include_role:
+    name: nodejs
   when: deployment_environment_id != 'production'
 
-- block:
-
-  - name: Clone project web repo
-    git: repo={{ app.webrepo }} dest="{{ shared_frontend_folder_path }}" version={{ app.branch }}
-    become_user: "{{ app.user }}"
-    when: app.webrepo is defined
-
-  - name: Link shared web repo dist to {{ app.webpath }}/dist
-    file: src="{{ shared_frontend_folder_path }}/dist" dest={{ app.webpath }} state=link
-
-  - name: Create local .env file for the dev server
-    template:
-      src: "templates/.env.development.local"
-      dest: "{{ shared_frontend_folder_path }}/.env.development.local"
-      force: no
-
-  when: deployment_environment_id == 'local_development'
-
-
-- name: Clone project web repo
-  git: repo={{ app.webrepo }} dest={{ app.webpath }} version={{ app.branch }}
-  become_user: "{{ app.user }}"
-  when: deployment_environment_id != 'local_development'
-
-- name: Clean previous web app builds - dist
-  file:
-    state: absent
-    path: "{{ app.webpath }}/dist"
-
-- name: Clean previous web app builds - node_modules
-  file:
-    state: absent
-    path: "{{ app.webpath }}/node_modules"
-
+# System info
 - name: Checking node version
-  shell: "source /home/{{ app.user}}/.bashrc; node --version"
+  shell: |
+    source /home/{{ app.user}}/.bashrc
+    node --version
   args:
     executable: /bin/bash
   register: node_version_output
@@ -48,21 +31,72 @@
   debug:
     msg: "{{ node_version_output.stdout }}"
 
-- name: Execute npm install
-  shell: "source /home/{{ app.user}}/.bashrc; npm install"
+# Temporary facts
+- set_fact:
+    tmp_webapp:
+      path: "{{ shared_frontend_folder_path | default(app.webpath) }}"
+
+# Clean environment prior to build
+- name: Clean previous web app
+  file:
+    path: "{{ tmp_webapp.path }}"
+    state: absent
+
+# Source
+- name: Clone project web repo
+  shell: |
+    set -e
+    test -d "{{ tmp_webapp.path }}" || git clone {{ app.webrepo }} "{{ tmp_webapp.path }}"
+    pushd "{{ tmp_webapp.path }}"
+      git pull
+      git checkout {{ app.branch }}
+    popd
   args:
     executable: /bin/bash
-    chdir: "{{ app.webpath }}"
   become_user: "{{ app.user }}"
+  when: app.webrepo is defined
 
-- name: Execute npm run build
-  shell: "source /home/{{ app.user}}/.bashrc; npm run build"
+# Local development related changes
+- block:
+  - name: Create local .env file for the dev server
+    template:
+      src: "templates/.env.development.local"
+      dest: "{{ shared_frontend_folder_path }}/.env.development.local"
+      force: no
+  when: deployment_environment_id == 'local_development'
+
+# Clean environment prior to build
+- name: Clean previous web app builds - dist
+  file:
+    path: "{{ tmp_webapp.path }}/dist"
+    state: absent
+
+- name: Clean previous web app builds - node_modules
+  file:
+    path: "{{ tmp_webapp.path }}/node_modules"
+    state: absent
+
+# Build
+- name: Build webapp
+  shell: |
+    set -e
+    source /home/{{ app.user}}/.bashrc
+    npm install
+    npm run build
   args:
     executable: /bin/bash
-    chdir: "{{ app.webpath }}"
+    chdir: "{{ tmp_webapp.path }}"
   become_user: "{{ app.user }}"
 
-- name: Stash possible local repo changes due to building...
-  command: git stash
-  args:
-    chdir: "{{ app.webpath }}"
+# Post build actions
+- block:
+  - name: Stash possible local repo changes due to building...
+    shell: git stash
+    args:
+      executable: /bin/bash
+      chdir: "{{ tmp_webapp.path }}"
+  when: deployment_environment_id != 'local_development'
+
+# Clear the temporary facts
+- set_fact:
+    tmp_webapp: {}

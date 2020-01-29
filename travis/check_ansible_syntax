@@ -1,0 +1,20 @@
+#!/bin/bash
+#################################################################
+# This is a script which will run ansible syntax checks
+#
+# Author(s):
+#    Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+#
+# License: MIT
+#
+# Copyright (C) 2020 CSC - IT Center for Science Ltd.
+# All Rights Reserved.
+#################################################################
+set -e
+
+pushd ansible
+    echo "Checking syntax of the playbooks"
+    ansible-playbook local_build.yml --syntax-check
+    ansible-playbook site_provision.yml --syntax-check
+    ansible-playbook site_deploy.yml --syntax-check
+popd
