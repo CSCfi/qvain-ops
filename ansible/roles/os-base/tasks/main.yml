@@ -43,6 +43,19 @@
     state: latest
   when: deployment_environment_id not in ['production']
 
+# Install Git 2.9 from SCL.
+# Needs to be enabled separately for use instead of the default git.
+# For example, to run "make install" with Git 2.9 enabled: scl enable rh-git29 "make install"
+- name: Install Centos SCL repos
+  yum: name=centos-release-scl state=latest
+
+- name: Enable SCL repository
+  command: yum-config-manager --enable rhel-server-rhscl-7-rpms
+
+- name: Install Centos SCL repos
+  yum: name=rh-git29 state=latest
+
+
 - name: Disable SELinux (A better approach should be come up with!)
   selinux: state=permissive policy=targeted
 
