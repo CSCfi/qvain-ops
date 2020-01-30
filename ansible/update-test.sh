@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ -z ${SECRETS} ]]; then
+if [[ -z ${SECRETS} ]]; then
   SECRETS=@../../secrets-test.yaml
 fi
 
