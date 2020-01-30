@@ -14,9 +14,11 @@
 # INSTALL env var tells where the binaries get copied to if the build was successful.
 #
 # WARNING: $PWD is not set correctly for the user; don't rely on it
-
+#
+# The build may use git commands that don't work properly in
+# Centos7 default git 1.8.3.1, so use Git 2.9 instead.
 - name: Build app
-  command: make install
+  command: scl enable rh-git29 "make install"
   args:
     chdir: "{{ app.base }}/go/src/{{ app.import_path }}"
   environment:
