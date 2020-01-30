@@ -1,7 +1,4 @@
 ### Configures server and API keys per environment.
-
-repo_branch: next
-
 server:
   ip: 195.148.30.68
   fqdn: qvain-stable.csc.fi
