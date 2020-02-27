@@ -1,3 +1,5 @@
+VENV:=source venv/bin/activate &&
+
 all:
 
 check:
@@ -5,9 +7,10 @@ check:
 
 venv:
 	@python -m venv venv
+	@$(VENV) pip install -r requirements.txt
 
 update-test: venv
-	@cd ansible && ./update-test.sh
+	@$(VENV) cd ansible && ./update-test.sh
 
 update-stable: venv
-	@cd ansible && ./update-stable.sh
+	@$(VENV) cd ansible && ./update-stable.sh
