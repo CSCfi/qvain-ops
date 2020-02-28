@@ -31,6 +31,7 @@ ansible/secrets/
 *.tar.gz
 __pycache__
 .idea
+.vscode
 
 # Mac stuff
 .DS_Store

@@ -1,6 +1,6 @@
 # {{ app.name }} env file
 APP_DEBUG={{ 1 if deployment_environment_id != 'production' else 0 }}
-APP_DEV_MODE={{ 1 if deployment_environment_id == 'local_development' else 0 }}
+APP_DEV_MODE={{ 1 if (deployment_environment_id == 'local_development' or deployment_environment_id == 'test') else 0 }}
 APP_HOSTNAME={{ server.fqdn }}
 APP_OIDC_PROVIDER_NAME={{ apis.oidc_provider_name }}
 APP_OIDC_PROVIDER_URL={{ apis.oidc_provider_url }}
@@ -10,6 +10,8 @@ APP_TOKEN_KEY={{ apis.token_key }}
 APP_METAX_API_HOST={{ apis.metax_api_hostname }}
 APP_METAX_API_USER={{ apis.metax_api_user }}
 APP_METAX_API_PASS={{ apis.metax_api_pass }}
+APP_QVAIN_STATS_API_KEY={{ apis.qvain_stats_api_key }}
+APP_QVAIN_LOOKUP_API_KEY={{ apis.qvain_lookup_api_key }}
 PGHOST={{ database.host }}
 PGDATABASE={{ database.name }}
 PGUSER={{ database.user }}

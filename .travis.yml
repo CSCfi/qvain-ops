@@ -1,0 +1,5 @@
+language: python
+script:
+   - ./travis/verify_pr_branches
+   - ./travis/check_ansible_syntax
+   - ./travis/check_ansible_lint

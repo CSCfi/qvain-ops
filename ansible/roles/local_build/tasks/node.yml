@@ -6,6 +6,11 @@
     creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
 
 - name: Install latest node LTS version using nvm
-  shell: "cd; source .nvm/nvm.sh; nvm install --lts"
+  shell: "cd; source .nvm/nvm.sh; nvm install --lts=dubnium"
+  args:
+    executable: /bin/bash
+
+- name: Use nodeJS 10.x series
+  shell: "cd; source .nvm/nvm.sh; nvm alias default lts/dubnium"
   args:
     executable: /bin/bash

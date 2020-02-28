@@ -1,0 +1,38 @@
+#!/bin/bash
+#################################################################
+# This is a simple branch PR check to setup and ensure workflow.
+#
+# Author(s):
+#    Juhapekka Piiroinen <juhapekka.piiroinen@csc.fi>
+#
+# License: MIT
+#
+# Copyright (C) 2020 CSC - IT Center for Science Ltd.
+# All Rights Reserved.
+#################################################################
+set -e
+
+if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    exit 0
+else
+    echo "Detected a pull request from ${TRAVIS_PULL_REQUEST_BRANCH} to ${TRAVIS_BRANCH}."
+fi
+
+if [[ ${TRAVIS_BRANCH} == "release" ]]; then
+    # we should allow PRs only from master branch
+    if [[ ${TRAVIS_PULL_REQUEST_BRANCH} != "master" ]]; then
+        echo "[ERROR] Pull requests to release are only allowed from master."
+        exit 2
+    fi
+fi
+
+if [[ ${TRAVIS_BRANCH} == "master" ]]; then
+    # we should allow PRs only from next branch
+    if [[ ${TRAVIS_PULL_REQUEST_BRANCH} != "next" ]]; then
+        echo "[ERROR] Pull requests to master are only allowed from next."
+        exit 2
+    fi
+fi
+
+echo "OK"
+exit 0
