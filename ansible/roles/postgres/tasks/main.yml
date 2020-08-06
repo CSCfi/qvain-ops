@@ -9,7 +9,7 @@
 #    state: present
 
 - name: Install Postgresql yum repository package
-  yum: name=https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm state=present
+  yum: name=https://download.postgresql.org/pub/repos/yum/reporpms/EL-6-x86_64/pgdg-redhat-repo-latest.noarch.rpm state=present
   when: deployment_environment_id != 'production'
 
 - name: Install PostgreSQL 9 and python psycopg2
