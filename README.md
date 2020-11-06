@@ -1,3 +1,5 @@
+# This repository was made for an older version of Qvain which is no longer in use. Qvain is now part of Etsin. For equivalent functionality to this repository, see https://github.com/CSCfi/etsin-ops
+
 # qvain-ops
 
 This repository contains [Ansible](https://docs.ansible.com/ansible/) scripts to set up an instance of [Qvain](https://github.com/CSCfi/qvain-api/).
